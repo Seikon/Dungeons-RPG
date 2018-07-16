@@ -1,0 +1,5 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+/Dungeons-RPG/.vs/Dungeons-RPG/v15/Server/sqlite3

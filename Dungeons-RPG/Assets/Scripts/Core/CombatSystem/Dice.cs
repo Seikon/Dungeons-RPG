@@ -10,4 +10,8 @@ public class Dice
     {
         return Random.Range(Dice.MIN, Dice.MAX);
     }
+    public static int generateRandomNumber(int min, int max)
+    {
+        return Random.Range(min, max);
+    }
 }

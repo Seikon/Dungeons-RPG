@@ -43,8 +43,6 @@ public abstract class Character : MonoBehaviour
         this.life = life;
         this.progressBarTurn = 0;
         this.state = CHARACTER_STATE.IDLE;
-        //Objeto de exclusión mutua
-        this.objectLock = new Object();
 
     }
     
@@ -106,14 +104,15 @@ public abstract class Character : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-		
-	}
+        //Objeto de exclusión mutua
+        this.objectLock = new Object();
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
         //Si ha realizado la acción pasa a esperar en cola
-		if(this.getState() == CHARACTER_STATE.WAITING_ACTION && !this.selectedAction.Equals(null))
+		if(this.getState() == CHARACTER_STATE.WAITING_ACTION && this.selectedAction != null)
         {
             this.setState(CHARACTER_STATE.WAITING_QUEUE);
         }

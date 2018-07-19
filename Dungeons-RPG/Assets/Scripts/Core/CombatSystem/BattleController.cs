@@ -9,7 +9,8 @@ public class BattleController : MonoBehaviour
     //Cola de turnos de acción
     public Queue<Character> acctionTurnQueue;
     //Interfaz Gráfica
-    Dictionary<int, Text> progresBarsUI;
+    Dictionary<int, Text> progressBarsUI;
+    Dictionary<int, Text> lifeBarsUI;
 
     public BattleController(List<Character> teamLeft, 
                             List<Character> teamRight)
@@ -21,16 +22,21 @@ public class BattleController : MonoBehaviour
     {
         //Asigna los elementos de la interfaz gráfica
         Text txtLog = GameObject.Find("txtLog").GetComponent<Text>();
+
         Text txtBrutusProgress = GameObject.Find("txtBrutusProgreso").GetComponent<Text>();
         Text txtEsqueletoProgress = GameObject.Find("txtEsqueletoProgreso").GetComponent<Text>();
+
+        Text txtBrutusLife = GameObject.Find("txtBrutusVida").GetComponent<Text>();
+        Text txtEsqueletoLife = GameObject.Find("txtEsqueletoVida").GetComponent<Text>();
         //Crea los personajes
-        Hero BrutusElPutus = new Hero(100,10,90,10,10,10);
-        Monster Skeleton = new Monster(200,10,30,10,10);
+        Hero BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Hero>();
+        Monster Skeleton = GameObject.Find("Esqueleto").GetComponent<Monster>();
 
         BrutusElPutus.id = 1;
         Skeleton.id = 2;
 
-        progresBarsUI = new Dictionary<int, Text>();
+        progressBarsUI = new Dictionary<int, Text>();
+        lifeBarsUI = new Dictionary<int, Text>();
 
         this.acctionTurnQueue = new Queue<Character>();
 
@@ -42,11 +48,16 @@ public class BattleController : MonoBehaviour
 
         this.battle = new Battle(teamLeft, teamRight);
 
-        progresBarsUI.Add(BrutusElPutus.id, txtBrutusProgress);
-        progresBarsUI.Add(Skeleton.id, txtEsqueletoProgress);
+        progressBarsUI.Add(BrutusElPutus.id, txtBrutusProgress);
+        progressBarsUI.Add(Skeleton.id, txtEsqueletoProgress);
+
+        lifeBarsUI.Add(BrutusElPutus.id, txtBrutusLife);
+        lifeBarsUI.Add(Skeleton.id, txtEsqueletoLife);
 
         BrutusElPutus.setState(Character.CHARACTER_STATE.CHARGING);
         Skeleton.setState(Character.CHARACTER_STATE.CHARGING);
+
+        GameObject.Find("btnBrutusAtaque").SetActive(false);
     }
 	
 	void Update ()
@@ -106,11 +117,11 @@ public class BattleController : MonoBehaviour
     {
         if(character.progressBarTurn > Character.PROGRESS_TURN_BAR_MAX_VALUE)
         {
-            progresBarsUI[character.id].text = Character.PROGRESS_TURN_BAR_MAX_VALUE + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
+            progressBarsUI[character.id].text = Character.PROGRESS_TURN_BAR_MAX_VALUE + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
         }
         else
         {
-            progresBarsUI[character.id].text = character.progressBarTurn + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
+            progressBarsUI[character.id].text = character.progressBarTurn + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
         }
     }
 }

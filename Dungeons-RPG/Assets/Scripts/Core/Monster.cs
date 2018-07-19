@@ -9,8 +9,7 @@ public class Monster : Character
     {
     }
 
-    override
-    public int getPowerBasicAttack()
+    public override int getPowerBasicAttack()
     {
         return base.getPowerBasicAttack();
     }

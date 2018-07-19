@@ -30,6 +30,7 @@ public abstract class Character : MonoBehaviour
 
     public BattleAction selectedAction;
     public int progressBarTurn;
+    public int id;
 
     private Object objectLock;
 
@@ -43,11 +44,11 @@ public abstract class Character : MonoBehaviour
         this.progressBarTurn = 0;
         this.state = CHARACTER_STATE.IDLE;
         //Objeto de exclusión mutua
-        objectLock = new Object();
+        this.objectLock = new Object();
 
     }
-    virtual
-    public int getPowerBasicAttack()
+    
+    public virtual int getPowerBasicAttack()
     {
         return this.attack;
     }
@@ -55,8 +56,8 @@ public abstract class Character : MonoBehaviour
     /// Comprueba si se realiza con exito un ataque
     /// </summary>
     /// <returns></returns>
-    virtual
-    public bool getHit()
+    
+    public virtual bool getHit()
     {
         //Genera el número atleatorio
         int result = Dice.generateRandomNumber();
@@ -76,17 +77,17 @@ public abstract class Character : MonoBehaviour
     /// Comprueba si realiza con éxito una acción evasiva
     /// </summary>
     /// <returns></returns>
-    virtual
-    public bool getDodge()
+    
+    public virtual bool getDodge()
     {
         int result = Dice.generateRandomNumber();
 
         return result < this.evasion;
     }
 
-    public void increaseProgressTurnBar()
+    public void increaseProgressTurnBar(float deltaTime)
     {
-        this.progressBarTurn += this.speed;
+        this.progressBarTurn += Mathf.FloorToInt(this.speed * deltaTime);
     }
 
     public void setState(CHARACTER_STATE newState)

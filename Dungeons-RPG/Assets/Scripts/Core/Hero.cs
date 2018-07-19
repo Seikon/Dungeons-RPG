@@ -12,8 +12,8 @@ public class Hero : Character
         this.magic = magic;
     }
     // El ataque básico será: attack + damage del Arma (en caso de que tenga arma)
-    override
-    public int getPowerBasicAttack()
+    
+    public override int getPowerBasicAttack()
     {
         int totalDamage = 0;
         
@@ -29,8 +29,8 @@ public class Hero : Character
         return totalDamage;
 
     }
-    override
-    public bool getHit()
+    
+    public override bool getHit()
     {
         int result;
         bool isImpact = false;

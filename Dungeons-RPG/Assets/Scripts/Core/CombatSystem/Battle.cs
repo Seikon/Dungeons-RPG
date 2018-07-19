@@ -15,16 +15,17 @@ public class Battle
     public Battle(List<Character> teamLeft,
                   List<Character> teamRight)
     {
+        this.battleCharacters = new List<Character>();
         //Fusiona los personajes en una lista
         //1. Equipo Derecha
         foreach (Character character in teamRight)
         {
-            battleCharacters.Add(character);
+            this.battleCharacters.Add(character);
         }
         //2. Equipo Izquierda
         foreach (Character character in teamLeft)
         {
-            battleCharacters.Add(character);
+            this.battleCharacters.Add(character);
         }
     }
 

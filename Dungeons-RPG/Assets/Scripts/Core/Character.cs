@@ -5,11 +5,33 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
 
+    public enum CHARACTER_STATE
+    {
+        IDLE = 0, // EL PERSONAJE ESTÁ EN ESTADO DE REPOSO
+        CHARGING = 1, // EL PERSONAJE ESTÁ CARGANDO SU BARRA DE TURNO
+        WAITING_ACTION = 2, // EL PERSONAJE ESTÁ ESPERANDO POR EL USUARIO / IA PARA REALIZAR UNA ACCIÓN
+        WAITING_QUEUE = 3, // EL PERSONAJE HA SELECCIONADO UNA ACCIÓN Y ESTÁ ESPERANDO A SER INTRODUCIDO EN LA COLA DE TURNOS DE ACCIÓN
+        QUEUED = 4, // EL PERSONAJE HA SIDO INTRODUCIDO EN LA COLA DE TURNOS DE ACCIÓN Y ESPERA A QUE SU ACCIÓN SEA EJECUTADA
+        PERFORMING = 5, // EL PERSONAJE ESTÁ REALIZANDO SU ACCIÓN
+        PERFORMED = 6, // EL PERSONAJE HA FINALIZADO SU ACCIÓN
+    }
+
+    public static int PROGRESS_TURN_BAR_MIN_VALUE = 0;
+    public static int PROGRESS_TURN_BAR_MAX_VALUE = 100;
+
+    //----Parameters-----
     public int attack; //Ataque
     public int defense; //Defensa
     public int speed; //Velocidad
     public int evasion; //Evasión
     public int life; //Vida
+    //-------------------
+    private CHARACTER_STATE state; //Estado del personaje
+
+    public BattleAction selectedAction;
+    public int progressBarTurn;
+
+    private Object objectLock;
 
     public Character(int attack, int defense, int speed, int evasion, int life)
     {
@@ -18,6 +40,11 @@ public abstract class Character : MonoBehaviour
         this.speed = speed;
         this.evasion = evasion;
         this.life = life;
+        this.progressBarTurn = 0;
+        this.state = CHARACTER_STATE.IDLE;
+        //Objeto de exclusión mutua
+        objectLock = new Object();
+
     }
     virtual
     public int getPowerBasicAttack()
@@ -57,6 +84,24 @@ public abstract class Character : MonoBehaviour
         return result < this.evasion;
     }
 
+    public void increaseProgressTurnBar()
+    {
+        this.progressBarTurn += this.speed;
+    }
+
+    public void setState(CHARACTER_STATE newState)
+    {
+        lock(objectLock)
+        {
+            this.state = newState;
+        }
+    }
+
+    public CHARACTER_STATE getState()
+    {
+        return this.state;
+    }
+
 	// Use this for initialization
 	void Start ()
     {
@@ -66,6 +111,10 @@ public abstract class Character : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-		
+        //Si ha realizado la acción pasa a esperar en cola
+		if(this.getState() == CHARACTER_STATE.WAITING_ACTION && !this.selectedAction.Equals(null))
+        {
+            this.setState(CHARACTER_STATE.WAITING_QUEUE);
+        }
 	}
 }

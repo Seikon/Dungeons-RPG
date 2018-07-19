@@ -1,10 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+public class Battle
 
-public class Battle : MonoBehaviour
 {
     public static int DEFAULT_PRECISION = 95;
     private static float ATTACK_MODIFIER = 0.2f;
+    //Los equipos que se enfrentan entre si
+    public List<Character> teamRight;
+    public List<Character> teamLeft;
+    //Todos los personajes ordenados de derecha a izquierda
+    public List<Character> battleCharacters;
+
+    public Battle(List<Character> teamLeft,
+                  List<Character> teamRight)
+    {
+        //Fusiona los personajes en una lista
+        //1. Equipo Derecha
+        foreach (Character character in teamRight)
+        {
+            battleCharacters.Add(character);
+        }
+        //2. Equipo Izquierda
+        foreach (Character character in teamLeft)
+        {
+            battleCharacters.Add(character);
+        }
+    }
+
     /// <summary>
     /// Comprueba si un atacante ha golpeado a un objetivo
     /// </summary>
@@ -81,4 +104,37 @@ public class Battle : MonoBehaviour
 
         return damage;
     }
+    /// <summary>
+    /// Comprueba si algún personaje está realizando alguna acción
+    /// </summary>
+    /// <returns></returns>
+    public bool checkCharacterPerforming()
+    {
+        bool isPerforming = false;
+
+        if(battleCharacters.Count > 0)
+        {
+            foreach (var character in battleCharacters)
+            {
+                if(character.getState() == Character.CHARACTER_STATE.PERFORMING)
+                {
+                    isPerforming = true;
+                    break;
+                }
+            }
+        }
+
+        return isPerforming;
+    }
+    public void executeAction(Character character)
+    {
+        switch(character.selectedAction.actionType)
+        {
+            case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
+                //Ataca al objetivo con un ataque básico cuerpo a cuerpo
+                this.attack(character, character.selectedAction.target);
+                break;
+        }
+    }
+
 }

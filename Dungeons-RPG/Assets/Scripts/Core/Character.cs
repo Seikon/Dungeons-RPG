@@ -15,10 +15,15 @@ public abstract class Character : MonoBehaviour
         QUEUED = 4, // EL PERSONAJE HA SIDO INTRODUCIDO EN LA COLA DE TURNOS DE ACCIÓN Y ESPERA A QUE SU ACCIÓN SEA EJECUTADA
         PERFORMING = 5, // EL PERSONAJE ESTÁ REALIZANDO SU ACCIÓN
         PERFORMED = 6, // EL PERSONAJE HA FINALIZADO SU ACCIÓN
+        DEAD = 7, // EL PERSONAJE HA REDUCIDO SU VIDA A 0
     }
 
     public static int PROGRESS_TURN_BAR_MIN_VALUE = 0;
     public static int PROGRESS_TURN_BAR_MAX_VALUE = 100;
+
+    protected const string TXT_LIFE = "txtLife";
+    protected const string TXT_NAME = "txtName";
+    protected const string TXT_TURN = "txtTurn";
 
     //----Parameters-----
     public int attack; //Ataque
@@ -30,10 +35,16 @@ public abstract class Character : MonoBehaviour
     private CHARACTER_STATE state; //Estado del personaje
 
     public BattleAction selectedAction;
-    public int progressBarTurn;
-    public int id;
+    public float progressBarTurn;
+    //Id único del personaje en la batalla
+    public string battleGUID;
 
     public Object objectLock;
+    //----Interfaz-----
+    public Text txtName;
+    public Text txtLife;
+    public Text txtTurn;
+
 
     public Character(int attack, int defense, int speed, int evasion, int life)
     {
@@ -45,7 +56,38 @@ public abstract class Character : MonoBehaviour
         this.progressBarTurn = 0;
         this.state = CHARACTER_STATE.IDLE;
     }
-    
+
+    // Use this for initialization
+    protected virtual void Start()
+    {
+        //Objeto de exclusión mutua
+        this.objectLock = new Object();
+        //Prepara los objetos de la interfaz gráfica
+        foreach (Text txt in gameObject.GetComponentsInChildren<Text>())
+        {
+            switch (txt.name)
+            {
+                case Character.TXT_NAME:
+                    this.txtName = txt;
+                    break;
+
+                case Character.TXT_LIFE:
+                    this.txtLife = txt;
+                    break;
+
+                case Character.TXT_TURN:
+                    this.txtTurn = txt;
+                    break;
+
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+    }
+
     public virtual int getPowerBasicAttack()
     {
         return this.attack;
@@ -85,7 +127,7 @@ public abstract class Character : MonoBehaviour
 
     public void increaseProgressTurnBar(float deltaTime)
     {
-        this.progressBarTurn += Mathf.FloorToInt(this.speed * deltaTime);
+        this.progressBarTurn += (this.speed * deltaTime);
     }
 
     public void setState(CHARACTER_STATE newState)
@@ -101,15 +143,17 @@ public abstract class Character : MonoBehaviour
         return this.state;
     }
 
-	// Use this for initialization
-	void Start ()
+    protected abstract void generateBasicAttack();
+
+    public void updateProgressBar()
     {
-        //Objeto de exclusión mutua
-        this.objectLock = new Object();
+        if (this.progressBarTurn > Character.PROGRESS_TURN_BAR_MAX_VALUE)
+        {
+            txtTurn.text = Character.PROGRESS_TURN_BAR_MAX_VALUE + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
+        }
+        else
+        {
+            txtTurn.text = Mathf.FloorToInt(this.progressBarTurn) + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
+        }
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	}
 }

@@ -6,6 +6,10 @@ public class Hero : Character
 {
     public int magic; //Puntos de mágia (PM)
     public  Weapon weapon; //Arma
+    public Button btnBasicAttack;
+    public BattleController.BATTLE_REQUEST stateTargetRequest;
+
+    private const string  BTN_BASIC_ATTACK = "btnBasicAttack";
 
     public Hero(int attack, int defense, int speed, int evasion, int life, int magic) 
         : base(attack, defense, speed, evasion, life)
@@ -54,10 +58,23 @@ public class Hero : Character
     }
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
-        //Objeto de exclusión mutua
-        base.objectLock = new Object();
+        base.Start();
+
+        //Prepara los objetos de la interfaz gráfica
+        foreach (Button btn in gameObject.GetComponentsInChildren<Button>())
+        {
+            switch (btn.name)
+            {
+                case BTN_BASIC_ATTACK:
+                    this.btnBasicAttack = btn;
+                    //--Ataque básico--
+                    this.btnBasicAttack.onClick.AddListener(this.generateBasicAttack);
+                    break;
+
+            }
+        }
     }
 
     private void Update()
@@ -67,7 +84,11 @@ public class Hero : Character
         {
             if (this.selectedAction != null)
             {
-                this.setState(CHARACTER_STATE.WAITING_QUEUE);
+                //La acción está preparada por lo que se meterá en la cola de acciones
+                if(this.selectedAction.actionState == BattleAction.BATTLE_ACTION_STATE.READY)
+                {
+                    this.setState(CHARACTER_STATE.WAITING_QUEUE);
+                }
             }
             else
             {
@@ -77,5 +98,20 @@ public class Hero : Character
         {
         }
     }
+
+    protected override void generateBasicAttack()
+    {
+        this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
+        this.setTargetRequest(BattleController.BATTLE_REQUEST.SELECT_ENEMY);
+    }
+    /// <summary>
+    /// Usa el método para realizar una petición de selección al controlador de batalla
+    /// </summary>
+    /// <param name="requestType"></param>
+    public void setTargetRequest(BattleController.BATTLE_REQUEST requestType)
+    {
+        this.stateTargetRequest = requestType;
+    }
+    
 
 }

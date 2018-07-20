@@ -9,16 +9,27 @@ public class Monster : Character
     {
     }
 
+    // Use this for initialization
+    protected override void Start()
+    {
+        base.Start();
+    }
+
+    
+    void Update()
+    {
+
+    }
+
     public override int getPowerBasicAttack()
     {
         return base.getPowerBasicAttack();
     }
 
-    // Use this for initialization
-    void Start()
+    protected override void generateBasicAttack()
     {
-        //Objeto de exclusión mutua
-        this.objectLock = new Object();
     }
+
+
 
 }

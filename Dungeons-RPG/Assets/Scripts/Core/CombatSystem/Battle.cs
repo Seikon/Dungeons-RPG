@@ -63,7 +63,7 @@ public class Battle
         //------------------------------------------
         //attack = attack - attack * (defense / 100)
         //------------------------------------------
-        totalDamage = attacker.attack - (attacker.attack * (target.defense / 100));
+        totalDamage = resultAttack - (resultAttack * (target.defense / 100));
 
         return totalDamage;
     }

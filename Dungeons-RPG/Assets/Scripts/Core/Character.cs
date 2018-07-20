@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class Character : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public abstract class Character : MonoBehaviour
     public int progressBarTurn;
     public int id;
 
-    private Object objectLock;
+    public Object objectLock;
 
     public Character(int attack, int defense, int speed, int evasion, int life)
     {
@@ -43,7 +44,6 @@ public abstract class Character : MonoBehaviour
         this.life = life;
         this.progressBarTurn = 0;
         this.state = CHARACTER_STATE.IDLE;
-
     }
     
     public virtual int getPowerBasicAttack()
@@ -90,7 +90,7 @@ public abstract class Character : MonoBehaviour
 
     public void setState(CHARACTER_STATE newState)
     {
-        lock(objectLock)
+        lock(this.objectLock)
         {
             this.state = newState;
         }
@@ -111,10 +111,5 @@ public abstract class Character : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        //Si ha realizado la acción pasa a esperar en cola
-		if(this.getState() == CHARACTER_STATE.WAITING_ACTION && this.selectedAction != null)
-        {
-            this.setState(CHARACTER_STATE.WAITING_QUEUE);
-        }
 	}
 }

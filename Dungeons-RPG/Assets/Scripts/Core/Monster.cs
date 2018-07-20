@@ -14,4 +14,11 @@ public class Monster : Character
         return base.getPowerBasicAttack();
     }
 
+    // Use this for initialization
+    void Start()
+    {
+        //Objeto de exclusión mutua
+        this.objectLock = new Object();
+    }
+
 }

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
 public class Battle
 
 {
@@ -11,10 +13,15 @@ public class Battle
     public List<Character> teamLeft;
     //Todos los personajes ordenados de derecha a izquierda
     public List<Character> battleCharacters;
+    public Text txtLog;
 
     public Battle(List<Character> teamLeft,
-                  List<Character> teamRight)
+                  List<Character> teamRight, Text txtLog)
     {
+        this.teamLeft = teamLeft;
+        this.teamRight = teamRight;
+        this.txtLog = txtLog;
+
         this.battleCharacters = new List<Character>();
         //Fusiona los personajes en una lista
         //1. Equipo Derecha
@@ -51,8 +58,8 @@ public class Battle
     private int calculateDamage(Character attacker, Character target)
     {
         int minValue, maxValue;
-        int resultAttack;
-        int totalDamage;
+        float resultAttack;
+        float totalDamage;
 
         //Generamos el modificador máximo y mínimo para el ataque
         minValue = attacker.attack - (int) (attacker.attack * ATTACK_MODIFIER);
@@ -63,9 +70,9 @@ public class Battle
         //------------------------------------------
         //attack = attack - attack * (defense / 100)
         //------------------------------------------
-        totalDamage = resultAttack - (resultAttack * (target.defense / 100));
+        totalDamage = resultAttack - (resultAttack * ((float) target.defense / 100));
 
-        return totalDamage;
+        return Mathf.FloorToInt(totalDamage);
     }
     /// <summary>
     /// Resta vida a la victima de un ataque
@@ -92,9 +99,9 @@ public class Battle
     /// <param name="attacker">Atacante</param>
     /// <param name="target"> Objetivo</param>
     /// <returns>El daño total recibido</returns>
-    public int? attack(Character attacker, Character target)
+    public int attack(Character attacker, Character target)
     {
-        int? damage = null;
+        int damage = 0;
 
         //El atacante comprueba si acierta al objetivo
         if (this.getImpact(attacker, target))
@@ -117,7 +124,7 @@ public class Battle
         {
             foreach (var character in battleCharacters)
             {
-                if(character.getState() == Character.CHARACTER_STATE.PERFORMING)
+                if(character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMING)
                 {
                     isPerforming = true;
                     break;
@@ -133,9 +140,39 @@ public class Battle
         {
             case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
                 //Ataca al objetivo con un ataque básico cuerpo a cuerpo
-                this.attack(character, character.selectedAction.target);
+                this.resolveBasicAttack(character);
                 break;
         }
+    }
+
+    private int resolveBasicAttack(Character battleCharacter)
+    {
+        int resultDamage = this.attack(battleCharacter, battleCharacter.selectedAction.target);
+
+        if(resultDamage > 0)
+        {
+            //Actualiza la vida del objetivo
+            battleCharacter.selectedAction.target.life -= resultDamage;
+
+            txtLog.text += "\n" + battleCharacter.txtName.text + " atacó a " + battleCharacter.selectedAction.target.txtName.text + " quitandole " + resultDamage + " de daño";
+
+            //Si el daño le provoca la muerte (life <=0)
+            if (battleCharacter.selectedAction.target.life <= 0)
+            {
+                battleCharacter.selectedAction.target.life = 0;
+                battleCharacter.selectedAction.target.setState(Character.CHARACTER_BATTLE_STATE.DEAD);
+                txtLog.text += "\n" + battleCharacter.selectedAction.target.txtName.text + " ha muerto";
+            }
+
+            //Actualiza la interfaz gráfica de la barra de vida del personaje
+            battleCharacter.selectedAction.target.updateLifeBar();
+        }
+        else
+        {
+            txtLog.text += "\n" + battleCharacter.txtName.text + " ha fallado su ataque sobre " + battleCharacter.selectedAction.target.txtName.text;
+        }
+
+        return resultDamage;
     }
 
 }

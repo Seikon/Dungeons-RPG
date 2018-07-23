@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class BattleController : MonoBehaviour
@@ -9,14 +10,27 @@ public class BattleController : MonoBehaviour
     Battle battle;
     //Cola de turnos de acción
     public Queue<Character> acctionTurnQueue;
-    
+    //Comprueba si un character está selecionando una acción
+    private bool isSelecting = false;
+
+    List<Character> possibleSelections;
+
+    Character selectedTarget;
+    int selectedIndex;
+
     //Lista de peticiones a la interfaz
     public enum BATTLE_REQUEST
     {
         NOTHING = 0,
-        SELECT_ENEMY = 1
+        SELECT_ENEMY = 1,
+        ATTENDED = 2
     }
-    
+    private enum TEAM
+    {
+        NOTHING = 0,
+        RIGHT = 1,
+        LEFT = 2
+    }
 
     public BattleController(List<Character> teamLeft, 
                             List<Character> teamRight)
@@ -44,30 +58,36 @@ public class BattleController : MonoBehaviour
         teamLeft.Add(Skeleton);
         teamLeft.Add(Skeleton1);
 
-        this.battle = new Battle(teamLeft, teamRight);
+        Text txtLog = GameObject.Find("SimuladorBatalla").GetComponentInChildren<Text>();
 
-        BrutusElPutus.setState(Character.CHARACTER_STATE.CHARGING);
-        Skeleton.setState(Character.CHARACTER_STATE.CHARGING);
-        Skeleton1.setState(Character.CHARACTER_STATE.CHARGING);
+        this.battle = new Battle(teamLeft, teamRight, txtLog);
+
+        Skeleton.updateLifeBar();
+        Skeleton1.updateLifeBar();
+        BrutusElPutus.updateLifeBar();
+
+        BrutusElPutus.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
+        Skeleton.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
+        Skeleton1.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
     }
-	
-	void Update ()
+
+    void Update()
     {
         //Comprueba una vez si hay algún personaje realizando alguna acción
         bool isPerforming = this.battle.checkCharacterPerforming();
         //Para cada personaje de batalla y según su estado, ejecuta las operaciones pertinentes
         foreach (Character battleCharacter in this.battle.battleCharacters)
         {
-            switch(battleCharacter.getState())
+            switch (battleCharacter.getState())
             {
-                case Character.CHARACTER_STATE.IDLE:
+                case Character.CHARACTER_BATTLE_STATE.IDLE:
                     break;
 
-                case Character.CHARACTER_STATE.CHARGING:
+                case Character.CHARACTER_BATTLE_STATE.CHARGING:
                     //Si ha terminado de cargar, se pone al personaje al estado de esperando acción
-                    if(battleCharacter.progressBarTurn >= Character.PROGRESS_TURN_BAR_MAX_VALUE)
+                    if (battleCharacter.progressBarTurn >= Character.PROGRESS_TURN_BAR_MAX_VALUE)
                     {
-                        battleCharacter.setState(Character.CHARACTER_STATE.WAITING_ACTION);
+                        battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.WAITING_ACTION);
                     }
                     else
                     {
@@ -77,31 +97,187 @@ public class BattleController : MonoBehaviour
                     }
                     break;
 
-                case Character.CHARACTER_STATE.WAITING_QUEUE:
-                    //Si está esperando para entrar en la cola se introduce
-                    this.acctionTurnQueue.Enqueue(battleCharacter);
-                    battleCharacter.setState(Character.CHARACTER_STATE.QUEUED);
+                case Character.CHARACTER_BATTLE_STATE.WAITING_ACTION:
+                    //Si está esperando por una acción Y tiene una petición al controlador de batalla
+                    if (battleCharacter.stateTargetRequest != BATTLE_REQUEST.NOTHING)
+                    {
+                        this.proccessBattleCharacterRequest(battleCharacter);
+                    }
+
                     break;
 
-                case Character.CHARACTER_STATE.QUEUED:
+                case Character.CHARACTER_BATTLE_STATE.WAITING_QUEUE:
+                    //Si está esperando para entrar en la cola se introduce
+                    this.acctionTurnQueue.Enqueue(battleCharacter);
+                    battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.QUEUED);
+                    break;
+
+                case Character.CHARACTER_BATTLE_STATE.QUEUED:
                     //Ejecuta la acción siempre que no haya otro personaje realizando la acción
-                    if(!isPerforming)
+                    if (!isPerforming)
                     {
-                        battle.executeAction(battleCharacter);
-                        battleCharacter.setState(Character.CHARACTER_STATE.PERFORMING);
-                        //Ahora habrá un personaje ejecutando una acción
                         isPerforming = true;
+                        battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMING);
+                        battle.executeAction(battleCharacter);
+                        battleCharacter.selectedAction = null;
+                        battleCharacter.stateTargetRequest = BATTLE_REQUEST.NOTHING;
+                        battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMED);
+                        //Ahora habrá un personaje ejecutando una acción
                     }
                     break;
 
-                case Character.CHARACTER_STATE.PERFORMING:
+                case Character.CHARACTER_BATTLE_STATE.PERFORMING:
                     break;
 
-                case Character.CHARACTER_STATE.PERFORMED:
+                case Character.CHARACTER_BATTLE_STATE.PERFORMED:
                     battleCharacter.progressBarTurn = Character.PROGRESS_TURN_BAR_MIN_VALUE;
-                    battleCharacter.setState(Character.CHARACTER_STATE.CHARGING);
+                    battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
                     break;
             }
         }
-	}
+    }
+
+    private void proccessBattleCharacterRequest(Character battleChracter)
+    {
+        switch(battleChracter.stateTargetRequest)
+        {
+            case BATTLE_REQUEST.NOTHING:
+                break;
+
+            case BATTLE_REQUEST.SELECT_ENEMY:
+                this.activateSelectEnemy(battleChracter);
+                break;
+
+            default:
+                throw new Exception("El tipo de solicitud de batalla no es válida o no se ha implementado aún");
+        }
+    }
+    /// <summary>
+    /// Activa la selección de enemigo
+    /// </summary>
+    private void activateSelectEnemy(Character battleCharacter)
+    {
+        if (!this.isSelecting)
+        {
+            this.possibleSelections = new List<Character>();
+            //Selecionará como los posibles objetivos a los personajes del equipo contrario
+
+            //Primero comprueba a que equipo pertenece
+            TEAM belongedTeam = getBattleCharacterTeam(battleCharacter);
+
+            if (belongedTeam == TEAM.RIGHT)
+            {
+                this.possibleSelections = this.battle.teamLeft;
+                this.isSelecting = true;
+            }
+            else if (belongedTeam == TEAM.LEFT)
+            {
+                this.possibleSelections = this.battle.teamRight;
+                this.isSelecting = true;
+            }
+            else
+            {
+                throw new Exception("El personaje no pertenece a ningún equipo, por lo que no se puede seleccionar enemigo");
+            }
+
+            this.possibleSelections = this.filterDeadCharacters(this.possibleSelections);
+
+            this.selectedTarget = this.possibleSelections[0];
+            this.selectedIndex = 0;
+            this.selectedTarget.txtName.color = Color.yellow;
+            this.selectedTarget.txtLife.color = Color.yellow;
+            this.selectedTarget.txtTurn.color = Color.yellow;
+        }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
+            {
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                selectedIndex--;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < this.possibleSelections.Count - 1)
+            {
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            this.isSelecting = false;
+            battleCharacter.selectedAction.target = this.selectedTarget;
+
+            this.selectedTarget.txtName.color = Color.white;
+            this.selectedTarget.txtLife.color = Color.white;
+            this.selectedTarget.txtTurn.color = Color.white;
+
+            battleCharacter.stateTargetRequest = BATTLE_REQUEST.ATTENDED;
+        }
+    }
+
+    private List<Character> filterDeadCharacters(List<Character> candidateCharacters)
+    {
+        List<Character> aliveCharacters = new List<Character>();
+
+        foreach(Character candidate in candidateCharacters)
+        {
+            if(candidate.getState() != Character.CHARACTER_BATTLE_STATE.DEAD)
+            {
+                aliveCharacters.Add(candidate);
+            }
+        }
+
+        return aliveCharacters;
+
+    }
+
+    private TEAM getBattleCharacterTeam(Character battleCharacter)
+    {
+        TEAM belongedTeam = TEAM.NOTHING;
+
+        foreach (Character characterCompare in this.battle.teamLeft)
+        {
+            if(battleCharacter.battleGUID.Equals(characterCompare.battleGUID))
+            {
+                belongedTeam = TEAM.LEFT;
+                break;
+            }
+        }
+
+        if(belongedTeam == TEAM.NOTHING)
+        {
+            foreach (Character characterCompare in this.battle.teamRight)
+            {
+                if (battleCharacter.battleGUID.Equals(characterCompare.battleGUID))
+                {
+                    belongedTeam = TEAM.RIGHT;
+                    break;
+                }
+            }
+        }
+
+        return belongedTeam;
+    }
+
 }

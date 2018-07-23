@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public abstract class Character : MonoBehaviour
 {
 
-    public enum CHARACTER_STATE
+    public enum CHARACTER_BATTLE_STATE
     {
         IDLE = 0, // EL PERSONAJE ESTÁ EN ESTADO DE REPOSO
         CHARGING = 1, // EL PERSONAJE ESTÁ CARGANDO SU BARRA DE TURNO
@@ -20,6 +20,7 @@ public abstract class Character : MonoBehaviour
 
     public static int PROGRESS_TURN_BAR_MIN_VALUE = 0;
     public static int PROGRESS_TURN_BAR_MAX_VALUE = 100;
+    public BattleController.BATTLE_REQUEST stateTargetRequest;
 
     protected const string TXT_LIFE = "txtLife";
     protected const string TXT_NAME = "txtName";
@@ -30,9 +31,10 @@ public abstract class Character : MonoBehaviour
     public int defense; //Defensa
     public int speed; //Velocidad
     public int evasion; //Evasión
-    public int life; //Vida
+    public int life; //Vida Actual
+    public int totalLife; //Vida total
     //-------------------
-    private CHARACTER_STATE state; //Estado del personaje
+    private CHARACTER_BATTLE_STATE state; //Estado del personaje
 
     public BattleAction selectedAction;
     public float progressBarTurn;
@@ -53,13 +55,15 @@ public abstract class Character : MonoBehaviour
         this.speed = speed;
         this.evasion = evasion;
         this.life = life;
+        this.totalLife = life;
         this.progressBarTurn = 0;
-        this.state = CHARACTER_STATE.IDLE;
+        this.state = CHARACTER_BATTLE_STATE.IDLE;
     }
 
     // Use this for initialization
     protected virtual void Start()
     {
+        this.totalLife = life;
         //Objeto de exclusión mutua
         this.objectLock = new Object();
         //Prepara los objetos de la interfaz gráfica
@@ -130,7 +134,7 @@ public abstract class Character : MonoBehaviour
         this.progressBarTurn += (this.speed * deltaTime);
     }
 
-    public void setState(CHARACTER_STATE newState)
+    public void setState(CHARACTER_BATTLE_STATE newState)
     {
         lock(this.objectLock)
         {
@@ -138,7 +142,7 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    public CHARACTER_STATE getState()
+    public CHARACTER_BATTLE_STATE getState()
     {
         return this.state;
     }
@@ -155,5 +159,16 @@ public abstract class Character : MonoBehaviour
         {
             txtTurn.text = Mathf.FloorToInt(this.progressBarTurn) + "/" + Character.PROGRESS_TURN_BAR_MAX_VALUE;
         }
+    }
+
+    public void updateLifeBar()
+    {
+        if(this.getState() == CHARACTER_BATTLE_STATE.DEAD)
+        {
+            this.txtLife.color = Color.red;
+        }
+
+        this.txtLife.text = this.life + " / " + this.totalLife;
+
     }
 }

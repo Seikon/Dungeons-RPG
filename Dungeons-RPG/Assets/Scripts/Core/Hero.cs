@@ -7,7 +7,6 @@ public class Hero : Character
     public int magic; //Puntos de mágia (PM)
     public  Weapon weapon; //Arma
     public Button btnBasicAttack;
-    public BattleController.BATTLE_REQUEST stateTargetRequest;
 
     private const string  BTN_BASIC_ATTACK = "btnBasicAttack";
 
@@ -45,7 +44,7 @@ public class Hero : Character
 
         //Si lleva arma saca la precisión del propio arma,
         //Sino obtendrá la precisión por defecto
-        if (this.weapon.Equals(null))
+        if (this.weapon == null)
         {
             isImpact = result < Battle.DEFAULT_PRECISION;
         }
@@ -63,7 +62,7 @@ public class Hero : Character
         base.Start();
 
         //Prepara los objetos de la interfaz gráfica
-        foreach (Button btn in gameObject.GetComponentsInChildren<Button>())
+        foreach (Button btn in this.gameObject.GetComponentsInChildren<Button>())
         {
             switch (btn.name)
             {
@@ -71,6 +70,7 @@ public class Hero : Character
                     this.btnBasicAttack = btn;
                     //--Ataque básico--
                     this.btnBasicAttack.onClick.AddListener(this.generateBasicAttack);
+                    this.btnBasicAttack.gameObject.SetActive(false);
                     break;
 
             }
@@ -79,23 +79,26 @@ public class Hero : Character
 
     private void Update()
     {
-        //Si ha realizado la acción pasa a esperar en cola
-        if (this.getState() == CHARACTER_STATE.WAITING_ACTION)
+        //Si le toca realizar la acción
+        if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {
-            if (this.selectedAction != null)
+            //Oculta el botón si no está pendiente de realizar ninguna acción
+            if(this.stateTargetRequest == BattleController.BATTLE_REQUEST.NOTHING)
             {
-                //La acción está preparada por lo que se meterá en la cola de acciones
-                if(this.selectedAction.actionState == BattleAction.BATTLE_ACTION_STATE.READY)
-                {
-                    this.setState(CHARACTER_STATE.WAITING_QUEUE);
-                }
+                this.btnBasicAttack.gameObject.SetActive(true);
             }
-            else
+
+            //Si ya esta preparado
+            if(this.checkActionFullFilled())
             {
+                //Marca la acción como lista y espera en la cola
+                this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
+                this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
             }
         }
         else
         {
+            this.btnBasicAttack.gameObject.SetActive(false);
         }
     }
 
@@ -103,6 +106,7 @@ public class Hero : Character
     {
         this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
         this.setTargetRequest(BattleController.BATTLE_REQUEST.SELECT_ENEMY);
+        this.btnBasicAttack.gameObject.SetActive(false);
     }
     /// <summary>
     /// Usa el método para realizar una petición de selección al controlador de batalla
@@ -111,6 +115,26 @@ public class Hero : Character
     public void setTargetRequest(BattleController.BATTLE_REQUEST requestType)
     {
         this.stateTargetRequest = requestType;
+    }
+
+    private bool checkActionFullFilled()
+    {
+        bool isFullFilled = false;
+
+        if(this.selectedAction != null)
+        {
+            switch (this.selectedAction.actionType)
+            {
+                case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
+                    if (this.selectedAction.target != null && this.stateTargetRequest == BattleController.BATTLE_REQUEST.ATTENDED)
+                    {
+                        isFullFilled = true;
+                    }
+                    break;
+            }
+        }
+
+        return isFullFilled;
     }
     
 

@@ -82,8 +82,8 @@ public class Hero : Character
         //Si le toca realizar la acción
         if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {
-            //Oculta el botón si no está pendiente de realizar ninguna acción
-            if(this.stateTargetRequest == BattleController.BATTLE_REQUEST.NOTHING)
+            //Muestra el botón si no está pendiente de realizar ninguna acción
+            if(this.request == null)
             {
                 this.btnBasicAttack.gameObject.SetActive(true);
             }
@@ -104,17 +104,19 @@ public class Hero : Character
 
     protected override void generateBasicAttack()
     {
+        //Selecciona acción de ataque
         this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
-        this.setTargetRequest(BattleController.BATTLE_REQUEST.SELECT_ENEMY);
+        //Al ser un Heroe la petición de acción será interactiva
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
         this.btnBasicAttack.gameObject.SetActive(false);
     }
     /// <summary>
     /// Usa el método para realizar una petición de selección al controlador de batalla
     /// </summary>
     /// <param name="requestType"></param>
-    public void setTargetRequest(BattleController.BATTLE_REQUEST requestType)
+    public void setRequest(BattleRequest request)
     {
-        this.stateTargetRequest = requestType;
+        this.request = request;
     }
 
     private bool checkActionFullFilled()
@@ -126,7 +128,7 @@ public class Hero : Character
             switch (this.selectedAction.actionType)
             {
                 case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
-                    if (this.selectedAction.target != null && this.stateTargetRequest == BattleController.BATTLE_REQUEST.ATTENDED)
+                    if (this.selectedAction.target != null && this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
                     {
                         isFullFilled = true;
                     }

@@ -175,4 +175,33 @@ public class Battle
         return resultDamage;
     }
 
+    public bool checkBattleEnded()
+    {
+        bool isEnded = false;
+
+        if(this.filterDeadCharacters(this.teamLeft).Count == 0 ||
+            this.filterDeadCharacters(this.teamRight).Count == 0)
+        {
+            isEnded = true;
+        }
+
+        return isEnded;
+    }
+
+    public List<Character> filterDeadCharacters(List<Character> candidateCharacters)
+    {
+        List<Character> aliveCharacters = new List<Character>();
+
+        foreach (Character candidate in candidateCharacters)
+        {
+            if (candidate.getState() != Character.CHARACTER_BATTLE_STATE.DEAD)
+            {
+                aliveCharacters.Add(candidate);
+            }
+        }
+
+        return aliveCharacters;
+
+    }
+
 }

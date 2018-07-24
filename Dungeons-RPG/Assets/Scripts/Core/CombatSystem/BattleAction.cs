@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class BattleAction
 {
@@ -17,7 +18,9 @@ public class BattleAction
 
     public BATTLE_ACCTION_TYPE actionType;
     public BATTLE_ACTION_STATE actionState;
+
     public Character target;
+    public List<Character> targets;
 
     public BattleAction(BATTLE_ACCTION_TYPE actionType, Character target)
     {

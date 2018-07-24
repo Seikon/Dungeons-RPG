@@ -241,6 +241,7 @@
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleAction.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\Battle.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleController.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\BattleRequest.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\Dice.cs" />
     <Compile Include="Assets\Scripts\Core\GameState.cs" />
     <Compile Include="Assets\Scripts\Core\Hero.cs" />

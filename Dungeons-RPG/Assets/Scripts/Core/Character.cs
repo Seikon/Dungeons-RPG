@@ -20,7 +20,7 @@ public abstract class Character : MonoBehaviour
 
     public static int PROGRESS_TURN_BAR_MIN_VALUE = 0;
     public static int PROGRESS_TURN_BAR_MAX_VALUE = 100;
-    public BattleController.BATTLE_REQUEST stateTargetRequest;
+    public BattleRequest request;
 
     protected const string TXT_LIFE = "txtLife";
     protected const string TXT_NAME = "txtName";

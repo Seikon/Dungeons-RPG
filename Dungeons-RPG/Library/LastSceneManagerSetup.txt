@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/mainMenu.unity
+- path: Assets/Scripts/Core/CombatSystem/Demo/basicCombat.unity
   isLoaded: 1
   isActive: 1

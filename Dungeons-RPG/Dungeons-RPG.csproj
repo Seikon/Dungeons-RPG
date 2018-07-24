@@ -237,9 +237,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Core\Character.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\BattleAction.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\Battle.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\BattleController.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\BattleRequest.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\Dice.cs" />
     <Compile Include="Assets\Scripts\Core\GameState.cs" />
+    <Compile Include="Assets\Scripts\Core\Hero.cs" />
+    <Compile Include="Assets\Scripts\Core\Monster.cs" />
     <Compile Include="Assets\Scripts\Core\StateGameController.cs" />
     <Compile Include="Assets\Scripts\Core\Utils.cs" />
+    <Compile Include="Assets\Scripts\Core\Weapon.cs" />
+    <Compile Include="Assets\Scripts\UI\MainMenuController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

@@ -136,6 +136,7 @@ public class BattleController : MonoBehaviour
                         break;
 
                     case Character.CHARACTER_BATTLE_STATE.PERFORMED:
+                        battleCharacter.request = null;
                         battleCharacter.progressBarTurn = Character.PROGRESS_TURN_BAR_MIN_VALUE;
                         battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
                         break;

@@ -8,6 +8,8 @@ public class BattleRequest
         NOTHING = 0,
         SELECT_ENEMY = 1,
         SELECT_ALL_ENEMIES = 2,
+        SELECT_FRIEND = 3,
+        SELECT_BAG_ITEM = 4,
         ATTENDED = 3
     }
 

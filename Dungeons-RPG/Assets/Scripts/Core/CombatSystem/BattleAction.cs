@@ -7,7 +7,8 @@ public class BattleAction
     public enum BATTLE_ACCTION_TYPE
     {
         IDLE = 0,
-        BASIC_ATTACK = 1
+        BASIC_ATTACK = 1,
+        USE_ITEM = 2
     }
 
     public enum BATTLE_ACTION_STATE
@@ -20,6 +21,7 @@ public class BattleAction
     public BATTLE_ACTION_STATE actionState;
 
     public Character target;
+    public Item itemTarget;
     public List<Character> targets;
 
     public BattleAction(BATTLE_ACCTION_TYPE actionType, Character target)

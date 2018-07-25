@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class Hero : Character
 {
     public int magic; //Puntos de mágia (PM)
     public  Weapon weapon; //Arma
+
     public Button btnBasicAttack;
+    public Button btnItem;
+
+    public List<Item> bag;
 
     private const string  BTN_BASIC_ATTACK = "btnBasicAttack";
+    private const string BTN_ITEM = "btnItem";
 
     public Hero(int attack, int defense, int speed, int evasion, int life, int magic) 
         : base(attack, defense, speed, evasion, life)
@@ -73,6 +79,13 @@ public class Hero : Character
                     this.btnBasicAttack.gameObject.SetActive(false);
                     break;
 
+                case BTN_ITEM:
+                    this.btnItem = btn;
+                    //--Objeto
+                    this.btnItem.onClick.AddListener(this.generateUseItem);
+                    this.btnItem.gameObject.SetActive(false);
+                    break;
+
             }
         }
     }
@@ -82,10 +95,11 @@ public class Hero : Character
         //Si le toca realizar la acción
         if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {
-            //Muestra el botón si no está pendiente de realizar ninguna acción
+            //Muestra los botones si no está pendiente de realizar ninguna acción
             if(this.request == null)
             {
                 this.btnBasicAttack.gameObject.SetActive(true);
+                this.btnItem.gameObject.SetActive(true);
             }
 
             //Si ya esta preparado
@@ -99,6 +113,7 @@ public class Hero : Character
         else
         {
             this.btnBasicAttack.gameObject.SetActive(false);
+            this.btnItem.gameObject.SetActive(false);
         }
     }
 
@@ -110,6 +125,19 @@ public class Hero : Character
         this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
         this.btnBasicAttack.gameObject.SetActive(false);
     }
+
+    private void generateUseItem()
+    {
+        //Selecciona acción de uso de item
+        this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM, null);
+        //Al ser un heroe la petición será interactiva
+        //Constará de dos partes:
+        // 1- Selecionar el objeto
+        // 2- Selecionar el personaje objetivo
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+        this.btnItem.gameObject.SetActive(false);
+    }
+
     /// <summary>
     /// Usa el método para realizar una petición de selección al controlador de batalla
     /// </summary>
@@ -127,8 +155,19 @@ public class Hero : Character
         {
             switch (this.selectedAction.actionType)
             {
+                //--Ataque básico--
                 case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
-                    if (this.selectedAction.target != null && this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
+                    if (this.selectedAction.target != null && 
+                        this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
+                    {
+                        isFullFilled = true;
+                    }
+                    break;
+                //--Objeto--
+                case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                    if(this.selectedAction.target != null &&
+                       this.selectedAction.itemTarget != null &&
+                       this.request.state== BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
                     {
                         isFullFilled = true;
                     }
@@ -138,6 +177,5 @@ public class Hero : Character
 
         return isFullFilled;
     }
-    
 
 }

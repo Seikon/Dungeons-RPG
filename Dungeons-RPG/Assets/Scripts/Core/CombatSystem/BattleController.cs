@@ -165,7 +165,13 @@ public class BattleController : MonoBehaviour
                 this.activateSelectEnemies(battleChracter);
                 break;
 
-            case BattleRequest.STATE_BATTLE_REQUEST.ATTENDED:
+            case BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND:
+                this.activateSelectFriend(battleChracter);
+                break;
+
+
+            case BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM:
+                this.activateSelectItem(battleChracter);
                 break;
 
             default:
@@ -279,6 +285,91 @@ public class BattleController : MonoBehaviour
                 battleCharacter.selectedAction.targets = this.selectedTargets;
                 break;
         }
+    }
+    private void activateSelectFriend(Character battleCharacter)
+    {
+        if(!this.isSelecting)
+        {
+            this.possibleSelections = new List<Character>();
+            //Selecionará como los posibles objetivos a los personajes del equipo contrario
+
+            //Primero comprueba a que equipo pertenece
+            TEAM belongedTeam = this.getBattleCharacterTeam(battleCharacter);
+
+            if (belongedTeam == TEAM.RIGHT)
+            {
+                this.possibleSelections = this.battle.teamRight;
+                this.isSelecting = true;
+            }
+            else if (belongedTeam == TEAM.LEFT)
+            {
+                this.possibleSelections = this.battle.teamLeft;
+                this.isSelecting = true;
+            }
+            else
+            {
+                throw new Exception("El personaje no pertenece a ningún equipo, por lo que no se puede seleccionar enemigo");
+            }
+            //Filtra por los personajes que están muertos
+            this.possibleSelections = this.battle.filterDeadCharacters(this.possibleSelections);
+
+            this.selectedTarget = this.possibleSelections[0];
+            this.selectedIndex = 0;
+            this.selectedTarget.txtName.color = Color.yellow;
+            this.selectedTarget.txtLife.color = Color.yellow;
+            this.selectedTarget.txtTurn.color = Color.yellow;
+
+            //Captura los eventos de selección de objetivo
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                if (this.selectedIndex > 0)
+                {
+                    this.selectedTarget.txtName.color = Color.white;
+                    this.selectedTarget.txtLife.color = Color.white;
+                    this.selectedTarget.txtTurn.color = Color.white;
+
+                    selectedIndex--;
+
+                    this.selectedTarget = this.possibleSelections[selectedIndex];
+                    this.selectedTarget.txtName.color = Color.yellow;
+                    this.selectedTarget.txtLife.color = Color.yellow;
+                    this.selectedTarget.txtTurn.color = Color.yellow;
+                }
+            }
+            if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                if (this.selectedIndex < this.possibleSelections.Count - 1)
+                {
+                    this.selectedTarget.txtName.color = Color.white;
+                    this.selectedTarget.txtLife.color = Color.white;
+                    this.selectedTarget.txtTurn.color = Color.white;
+
+                    this.selectedIndex++;
+
+                    this.selectedTarget = this.possibleSelections[selectedIndex];
+                    this.selectedTarget.txtName.color = Color.yellow;
+                    this.selectedTarget.txtLife.color = Color.yellow;
+                    this.selectedTarget.txtTurn.color = Color.yellow;
+                }
+            }
+
+            if (Input.GetKeyUp(KeyCode.Z))
+            {
+                this.isSelecting = false;
+                battleCharacter.selectedAction.target = this.selectedTarget;
+
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+            }
+        }
+    }
+
+    private void activateSelectItem(Character battleCharacter)
+    {
+
     }
 
     private TEAM getBattleCharacterTeam(Character battleCharacter)

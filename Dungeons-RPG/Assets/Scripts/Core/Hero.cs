@@ -12,6 +12,7 @@ public class Hero : Character
     public Button btnItem;
 
     public Text txtItem;
+    public List<Text> txtListItems;
 
     public List<Item> bag;
 
@@ -70,6 +71,8 @@ public class Hero : Character
     protected override void Start()
     {
         base.Start();
+
+        this.txtListItems = new List<Text>();
 
         //Prepara los objetos de la interfaz gráfica
 

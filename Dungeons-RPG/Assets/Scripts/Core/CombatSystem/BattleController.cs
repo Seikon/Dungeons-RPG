@@ -16,7 +16,10 @@ public class BattleController : MonoBehaviour
     List<Character> possibleSelections;
 
     Character selectedTarget;
+    Item selectedItem;
     List<Character> selectedTargets;
+
+    Text selectedTextItem;
 
     int selectedIndex;
 
@@ -379,7 +382,9 @@ public class BattleController : MonoBehaviour
 
         if(!this.isSelecting)
         {
-            for(int indItem = 0; indItem < battleHero.bag.Count - 1; indItem++)
+            battleHero.txtListItems = new List<Text>();
+
+            for(int indItem = 0; indItem < battleHero.bag.Count; indItem++)
             {
                 //-----Creación del componente-----
                 GameObject itemText = new GameObject("Item" + indItem);
@@ -391,11 +396,59 @@ public class BattleController : MonoBehaviour
                 itemTempComp.fontSize = battleHero.txtName.fontSize;
                 itemTempComp.color = battleHero.txtItem.color;
                 itemText.transform.SetParent(battleHero.txtItem.transform);
+                //Posición relativa a su padre
                 itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
 
+                battleHero.txtListItems.Add(itemTempComp);
+
             }
+
+            this.selectedIndex = 0;
+            this.selectedItem = battleHero.bag[0];
+            battleHero.txtListItems[0].color = Color.yellow;
+
             this.isSelecting = true;
         }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
+            {
+                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex--;
+
+                this.selectedItem = battleHero.bag[selectedIndex];
+                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < battleHero.bag.Count - 1)
+            {
+                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedItem = battleHero.bag[selectedIndex];
+                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            this.isSelecting = false;
+
+            battleCharacter.selectedAction.itemTarget = this.selectedItem;
+            battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+
+            battleHero.txtItem.gameObject.SetActive(false);
+        }
+
     }
 
     private TEAM getBattleCharacterTeam(Character battleCharacter)

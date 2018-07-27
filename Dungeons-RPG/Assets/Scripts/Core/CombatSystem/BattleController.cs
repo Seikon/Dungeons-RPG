@@ -65,6 +65,12 @@ public class BattleController : MonoBehaviour
         Skeleton2.updateLifeBar();
         BrutusElPutus.updateLifeBar();
 
+        BrutusElPutus.bag = new List<Item>();
+
+        BrutusElPutus.bag.Add(new Potion());
+        BrutusElPutus.bag.Add(new Potion());
+        BrutusElPutus.bag.Add(new Potion());
+
         BrutusElPutus.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton1.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
@@ -369,7 +375,27 @@ public class BattleController : MonoBehaviour
 
     private void activateSelectItem(Character battleCharacter)
     {
+        Hero battleHero = (Hero) battleCharacter;
 
+        if(!this.isSelecting)
+        {
+            for(int indItem = 0; indItem < battleHero.bag.Count - 1; indItem++)
+            {
+                //-----Creación del componente-----
+                GameObject itemText = new GameObject("Item" + indItem);
+                Text itemTempComp = itemText.AddComponent<Text>();
+                //-----Personalización del componente-----
+                itemTempComp.text = battleHero.bag[indItem].name;
+                itemTempComp.font = battleHero.txtName.font;
+                itemTempComp.alignment = TextAnchor.MiddleCenter;
+                itemTempComp.fontSize = battleHero.txtName.fontSize;
+                itemTempComp.color = battleHero.txtItem.color;
+                itemText.transform.SetParent(battleHero.txtItem.transform);
+                itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
+
+            }
+            this.isSelecting = true;
+        }
     }
 
     private TEAM getBattleCharacterTeam(Character battleCharacter)

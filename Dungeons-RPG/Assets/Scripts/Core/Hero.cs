@@ -11,15 +11,19 @@ public class Hero : Character
     public Button btnBasicAttack;
     public Button btnItem;
 
+    public Text txtItem;
+
     public List<Item> bag;
 
     private const string  BTN_BASIC_ATTACK = "btnBasicAttack";
     private const string BTN_ITEM = "btnItem";
+    private const string TXT_ITEM = "txtItem";
 
     public Hero(int attack, int defense, int speed, int evasion, int life, int magic) 
         : base(attack, defense, speed, evasion, life)
     {
         this.magic = magic;
+        this.bag = new List<Item>();
     }
     // El ataque básico será: attack + damage del Arma (en caso de que tenga arma)
     
@@ -68,6 +72,18 @@ public class Hero : Character
         base.Start();
 
         //Prepara los objetos de la interfaz gráfica
+
+        foreach (Text txt in gameObject.GetComponentsInChildren<Text>())
+        {
+            switch (txt.name)
+            {
+                case TXT_ITEM:
+                    this.txtItem = txt;
+                    break;
+
+            }
+        }
+
         foreach (Button btn in this.gameObject.GetComponentsInChildren<Button>())
         {
             switch (btn.name)
@@ -134,7 +150,9 @@ public class Hero : Character
         //Constará de dos partes:
         // 1- Selecionar el objeto
         // 2- Selecionar el personaje objetivo
-        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+        //this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+
         this.btnItem.gameObject.SetActive(false);
     }
 

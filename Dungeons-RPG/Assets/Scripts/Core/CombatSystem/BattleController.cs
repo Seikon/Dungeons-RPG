@@ -328,51 +328,53 @@ public class BattleController : MonoBehaviour
             this.selectedTarget.txtLife.color = Color.yellow;
             this.selectedTarget.txtTurn.color = Color.yellow;
 
-            //Captura los eventos de selección de objetivo
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+        }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
             {
-                if (this.selectedIndex > 0)
-                {
-                    this.selectedTarget.txtName.color = Color.white;
-                    this.selectedTarget.txtLife.color = Color.white;
-                    this.selectedTarget.txtTurn.color = Color.white;
-
-                    selectedIndex--;
-
-                    this.selectedTarget = this.possibleSelections[selectedIndex];
-                    this.selectedTarget.txtName.color = Color.yellow;
-                    this.selectedTarget.txtLife.color = Color.yellow;
-                    this.selectedTarget.txtTurn.color = Color.yellow;
-                }
-            }
-            if (Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                if (this.selectedIndex < this.possibleSelections.Count - 1)
-                {
-                    this.selectedTarget.txtName.color = Color.white;
-                    this.selectedTarget.txtLife.color = Color.white;
-                    this.selectedTarget.txtTurn.color = Color.white;
-
-                    this.selectedIndex++;
-
-                    this.selectedTarget = this.possibleSelections[selectedIndex];
-                    this.selectedTarget.txtName.color = Color.yellow;
-                    this.selectedTarget.txtLife.color = Color.yellow;
-                    this.selectedTarget.txtTurn.color = Color.yellow;
-                }
-            }
-
-            if (Input.GetKeyUp(KeyCode.Z))
-            {
-                this.isSelecting = false;
-                battleCharacter.selectedAction.target = this.selectedTarget;
-
                 this.selectedTarget.txtName.color = Color.white;
                 this.selectedTarget.txtLife.color = Color.white;
                 this.selectedTarget.txtTurn.color = Color.white;
 
-                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                selectedIndex--;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
             }
+        }
+
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < this.possibleSelections.Count - 1)
+            {
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            this.isSelecting = false;
+            battleCharacter.selectedAction.target = this.selectedTarget;
+
+            this.selectedTarget.txtName.color = Color.white;
+            this.selectedTarget.txtLife.color = Color.white;
+            this.selectedTarget.txtTurn.color = Color.white;
+
+            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
         }
     }
 
@@ -383,6 +385,7 @@ public class BattleController : MonoBehaviour
         if(!this.isSelecting)
         {
             battleHero.txtListItems = new List<Text>();
+            battleHero.txtItem.gameObject.SetActive(true);
 
             for(int indItem = 0; indItem < battleHero.bag.Count; indItem++)
             {
@@ -442,9 +445,15 @@ public class BattleController : MonoBehaviour
             this.isSelecting = false;
 
             battleCharacter.selectedAction.itemTarget = this.selectedItem;
+            battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
             battleHero.txtListItems[this.selectedIndex].color = Color.white;
 
             battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+
+            foreach (Transform child in battleHero.txtItem.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
 
             battleHero.txtItem.gameObject.SetActive(false);
         }

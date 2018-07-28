@@ -82,6 +82,7 @@ public class Hero : Character
             {
                 case TXT_ITEM:
                     this.txtItem = txt;
+                    this.txtItem.gameObject.SetActive(false);
                     break;
 
             }

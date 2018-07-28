@@ -142,6 +142,10 @@ public class Battle
                 //Ataca al objetivo con un ataque básico cuerpo a cuerpo
                 this.resolveBasicAttack(character);
                 break;
+            case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                //Usa el objeto
+                this.useItem(character);
+                break;
         }
     }
 
@@ -173,6 +177,22 @@ public class Battle
         }
 
         return resultDamage;
+    }
+
+    private void  useItem(Character battleCharacter)
+    {
+        Hero battleHero = (Hero) battleCharacter;
+
+        //Recupera el objeto de la selección
+        Item itemUsed = battleHero.selectedAction.itemTarget;
+        //Utiliza el objeto sobre el objetivo
+        itemUsed.use(battleHero.selectedAction.target);
+        //Elimina el objeto de la bolsa
+        battleHero.bag.RemoveAt(battleHero.selectedAction.selectedIndex);
+
+        battleHero.selectedAction.target.updateLifeBar();
+
+        txtLog.text += "\n" + battleHero.name + " utilizó " + " " + itemUsed.name;
     }
 
     public bool checkBattleEnded()

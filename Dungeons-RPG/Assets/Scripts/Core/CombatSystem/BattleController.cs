@@ -16,7 +16,10 @@ public class BattleController : MonoBehaviour
     List<Character> possibleSelections;
 
     Character selectedTarget;
+    Item selectedItem;
     List<Character> selectedTargets;
+
+    Text selectedTextItem;
 
     int selectedIndex;
 
@@ -64,6 +67,12 @@ public class BattleController : MonoBehaviour
         Skeleton1.updateLifeBar();
         Skeleton2.updateLifeBar();
         BrutusElPutus.updateLifeBar();
+
+        BrutusElPutus.bag = new List<Item>();
+
+        BrutusElPutus.bag.Add(new Potion());
+        BrutusElPutus.bag.Add(new Potion());
+        BrutusElPutus.bag.Add(new Potion());
 
         BrutusElPutus.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
@@ -165,7 +174,13 @@ public class BattleController : MonoBehaviour
                 this.activateSelectEnemies(battleChracter);
                 break;
 
-            case BattleRequest.STATE_BATTLE_REQUEST.ATTENDED:
+            case BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND:
+                this.activateSelectFriend(battleChracter);
+                break;
+
+
+            case BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM:
+                this.activateSelectItem(battleChracter);
                 break;
 
             default:
@@ -279,6 +294,170 @@ public class BattleController : MonoBehaviour
                 battleCharacter.selectedAction.targets = this.selectedTargets;
                 break;
         }
+    }
+    private void activateSelectFriend(Character battleCharacter)
+    {
+        if(!this.isSelecting)
+        {
+            this.possibleSelections = new List<Character>();
+            //Selecionará como los posibles objetivos a los personajes del equipo contrario
+
+            //Primero comprueba a que equipo pertenece
+            TEAM belongedTeam = this.getBattleCharacterTeam(battleCharacter);
+
+            if (belongedTeam == TEAM.RIGHT)
+            {
+                this.possibleSelections = this.battle.teamRight;
+                this.isSelecting = true;
+            }
+            else if (belongedTeam == TEAM.LEFT)
+            {
+                this.possibleSelections = this.battle.teamLeft;
+                this.isSelecting = true;
+            }
+            else
+            {
+                throw new Exception("El personaje no pertenece a ningún equipo, por lo que no se puede seleccionar enemigo");
+            }
+            //Filtra por los personajes que están muertos
+            this.possibleSelections = this.battle.filterDeadCharacters(this.possibleSelections);
+
+            this.selectedTarget = this.possibleSelections[0];
+            this.selectedIndex = 0;
+            this.selectedTarget.txtName.color = Color.yellow;
+            this.selectedTarget.txtLife.color = Color.yellow;
+            this.selectedTarget.txtTurn.color = Color.yellow;
+
+        }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
+            {
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                selectedIndex--;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < this.possibleSelections.Count - 1)
+            {
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedTarget = this.possibleSelections[selectedIndex];
+                this.selectedTarget.txtName.color = Color.yellow;
+                this.selectedTarget.txtLife.color = Color.yellow;
+                this.selectedTarget.txtTurn.color = Color.yellow;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            this.isSelecting = false;
+            battleCharacter.selectedAction.target = this.selectedTarget;
+
+            this.selectedTarget.txtName.color = Color.white;
+            this.selectedTarget.txtLife.color = Color.white;
+            this.selectedTarget.txtTurn.color = Color.white;
+
+            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+        }
+    }
+
+    private void activateSelectItem(Character battleCharacter)
+    {
+        Hero battleHero = (Hero) battleCharacter;
+
+        if(!this.isSelecting)
+        {
+            battleHero.txtListItems = new List<Text>();
+            battleHero.txtItem.gameObject.SetActive(true);
+
+            for(int indItem = 0; indItem < battleHero.bag.Count; indItem++)
+            {
+                //-----Creación del componente-----
+                GameObject itemText = new GameObject("Item" + indItem);
+                Text itemTempComp = itemText.AddComponent<Text>();
+                //-----Personalización del componente-----
+                itemTempComp.text = battleHero.bag[indItem].name;
+                itemTempComp.font = battleHero.txtName.font;
+                itemTempComp.alignment = TextAnchor.MiddleCenter;
+                itemTempComp.fontSize = battleHero.txtName.fontSize;
+                itemTempComp.color = battleHero.txtItem.color;
+                itemText.transform.SetParent(battleHero.txtItem.transform);
+                //Posición relativa a su padre
+                itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
+
+                battleHero.txtListItems.Add(itemTempComp);
+
+            }
+
+            this.selectedIndex = 0;
+            this.selectedItem = battleHero.bag[0];
+            battleHero.txtListItems[0].color = Color.yellow;
+
+            this.isSelecting = true;
+        }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
+            {
+                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex--;
+
+                this.selectedItem = battleHero.bag[selectedIndex];
+                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < battleHero.bag.Count - 1)
+            {
+                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedItem = battleHero.bag[selectedIndex];
+                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            this.isSelecting = false;
+
+            battleCharacter.selectedAction.itemTarget = this.selectedItem;
+            battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
+            battleHero.txtListItems[this.selectedIndex].color = Color.white;
+
+            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+
+            foreach (Transform child in battleHero.txtItem.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            battleHero.txtItem.gameObject.SetActive(false);
+        }
+
     }
 
     private TEAM getBattleCharacterTeam(Character battleCharacter)

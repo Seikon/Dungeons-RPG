@@ -67,6 +67,42 @@ public class Hero : Character
         return isImpact;
     }
 
+    public override bool getCritical()
+    {
+        int result;
+        bool isCritical = false;
+
+        //Genera el número atleatorio 1-100
+        result = Dice.generateRandomNumber();
+
+        if(this.weapon == null)
+        {
+            isCritical = result < Weapon.DEFAULT_CRITICAL_ATTACK_PROBABILITY;
+        }
+        else
+        {
+            isCritical = result < this.weapon.criticalAttackProbability;
+        }
+
+        return isCritical;
+    }
+
+    public override int getCriticalAttack()
+    {
+        int criticalAttack;
+
+        if (this.weapon == null)
+        {
+            criticalAttack = Mathf.FloorToInt(this.attack * Weapon.DEFAULT_CRITIAL_ATTACK_MODIFIER);
+        }
+        else
+        {
+            criticalAttack = Mathf.FloorToInt(this.attack * this.weapon.criticalAttackModifier);
+        }
+
+        return criticalAttack;
+    }
+
     // Use this for initialization
     protected override void Start()
     {

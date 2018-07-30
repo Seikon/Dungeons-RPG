@@ -54,16 +54,29 @@ public class Battle
 
         return isImpact;
     }
-
     private int calculateDamage(Character attacker, Character target)
     {
         int minValue, maxValue;
+        int basicAttack;
         float resultAttack;
         float totalDamage;
+        bool isCritical = false;
+
+        isCritical = attacker.getCritical();
+
+        if(isCritical)
+        {
+            basicAttack = attacker.getCriticalAttack();
+            this.txtLog.text += "\n" + "¡Ataque crítico!";
+        }
+        else
+        {
+            basicAttack = attacker.attack;
+        }
 
         //Generamos el modificador máximo y mínimo para el ataque
-        minValue = attacker.attack - (int) (attacker.attack * ATTACK_MODIFIER);
-        maxValue = attacker.attack + (int) (attacker.attack * ATTACK_MODIFIER);
+        minValue = basicAttack - (int) (basicAttack * ATTACK_MODIFIER);
+        maxValue = basicAttack + (int) (basicAttack * ATTACK_MODIFIER);
         //Obtenemos el valor resultado para el modificador de ataque
         resultAttack = Dice.generateRandomNumber(minValue, maxValue);
         //Resolvemos el ataque restandole el tanto por ciento de la defensa del objetivo

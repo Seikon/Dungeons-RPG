@@ -117,6 +117,9 @@ public abstract class Character : MonoBehaviour
         return result < Battle.DEFAULT_PRECISION;
     }
 
+    public abstract bool getCritical();
+    public abstract int getCriticalAttack();
+
     /// <summary>
     /// Comprueba si realiza con éxito una acción evasiva
     /// </summary>

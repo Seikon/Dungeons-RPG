@@ -159,6 +159,10 @@ public class Battle
                 //Usa el objeto
                 this.useItem(character);
                 break;
+            case BattleAction.BATTLE_ACCTION_TYPE.MAGIC_ATTACK:
+                //Ataca al objetivo con un ataque mágico
+                this.resolveMagicAttack(character);
+                break;
         }
     }
 
@@ -167,6 +171,36 @@ public class Battle
         int resultDamage = this.attack(battleCharacter, battleCharacter.selectedAction.target);
 
         if(resultDamage > 0)
+        {
+            //Actualiza la vida del objetivo
+            battleCharacter.selectedAction.target.life -= resultDamage;
+
+            txtLog.text += "\n" + battleCharacter.txtName.text + " atacó a " + battleCharacter.selectedAction.target.txtName.text + " quitandole " + resultDamage + " de daño";
+
+            //Si el daño le provoca la muerte (life <=0)
+            if (battleCharacter.selectedAction.target.life <= 0)
+            {
+                battleCharacter.selectedAction.target.life = 0;
+                battleCharacter.selectedAction.target.setState(Character.CHARACTER_BATTLE_STATE.DEAD);
+                txtLog.text += "\n" + battleCharacter.selectedAction.target.txtName.text + " ha muerto";
+            }
+
+            //Actualiza la interfaz gráfica de la barra de vida del personaje
+            battleCharacter.selectedAction.target.updateLifeBar();
+        }
+        else
+        {
+            txtLog.text += "\n" + battleCharacter.txtName.text + " ha fallado su ataque sobre " + battleCharacter.selectedAction.target.txtName.text;
+        }
+
+        return resultDamage;
+    }
+
+    private int resolveMagicAttack(Character battleCharacter)
+    {
+        int resultDamage = this.attack(battleCharacter, battleCharacter.selectedAction.target);
+
+        if (resultDamage > 0)
         {
             //Actualiza la vida del objetivo
             battleCharacter.selectedAction.target.life -= resultDamage;

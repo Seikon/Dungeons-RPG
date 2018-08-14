@@ -8,7 +8,8 @@ public class BattleAction
     {
         IDLE = 0,
         BASIC_ATTACK = 1,
-        USE_ITEM = 2
+        USE_ITEM = 2,
+        MAGIC_ATTACK = 3
     }
 
     public enum BATTLE_ACTION_STATE

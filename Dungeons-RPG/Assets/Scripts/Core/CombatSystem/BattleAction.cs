@@ -23,6 +23,7 @@ public class BattleAction
 
     public Character target;
     public Item itemTarget;
+    public Skill skillTarget;
     public List<Character> targets;
     public int selectedIndex;
 

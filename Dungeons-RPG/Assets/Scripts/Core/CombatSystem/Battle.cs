@@ -54,6 +54,27 @@ public class Battle
 
         return isImpact;
     }
+
+    /// <summary>
+    /// Comprueba si un atacante ha golpeado a un objetivo con un ataque mágico
+    /// </summary>
+    /// <param name="attacker">El atacante (quien realiza el ataque)</param>
+    /// <param name="target">El objetivo (quien recibe el ataque)</param>
+    /// <returns></returns>
+    private bool getMagicImpact(Character attacker, Character target)
+    {
+        bool isImpact = false;
+        //Primero comprueba si el atacante tiene exito en el ataque
+        if (attacker.getHit())
+        {
+            //Habrá impacto siempre y cuando no consiga esquivar el golpe el objetivo
+            isImpact = !target.getDodge();
+        }
+
+        return isImpact;
+    }
+
+
     private int calculateDamage(Character attacker, Character target)
     {
         int minValue, maxValue;
@@ -87,6 +108,42 @@ public class Battle
 
         return Mathf.FloorToInt(totalDamage);
     }
+
+    private int calculateMagicalDamage(Character attacker, Skill attackerSkill, Character target)
+    {
+        int minValue, maxValue;
+        int basicAttack;
+        float resultAttack;
+        float totalDamage;
+        bool isCritical = false;
+
+        isCritical = attacker.getCritical();
+
+        if (isCritical)
+        {
+            basicAttack = attacker.getCriticalAttack();
+            this.txtLog.text += "\n" + "¡Ataque crítico!";
+        }
+        else
+        {
+            basicAttack = attacker.attack;
+        }
+
+        //Generamos el modificador máximo y mínimo para el ataque
+        minValue = basicAttack - (int)(basicAttack * ATTACK_MODIFIER);
+        maxValue = basicAttack + (int)(basicAttack * ATTACK_MODIFIER);
+        //Obtenemos el valor resultado para el modificador de ataque
+        resultAttack = Dice.generateRandomNumber(minValue, maxValue);
+        //Resolvemos el ataque restandole el tanto por ciento de la defensa del objetivo
+        //------------------------------------------
+        //attack = attack - attack * (defense / 100)
+        //------------------------------------------
+        totalDamage = resultAttack - (resultAttack * ((float)target.defense / 100));
+
+        return Mathf.FloorToInt(totalDamage);
+    }
+
+
     /// <summary>
     /// Resta vida a la victima de un ataque
     /// </summary>
@@ -125,6 +182,31 @@ public class Battle
 
         return damage;
     }
+
+    /// <summary>
+    /// Un atacante realiza un ataque sobre un objetivo
+    /// 1. Se cálcula si hay Hit
+    /// 2. Se calcula el daño
+    /// </summary>
+    /// <param name="attacker">Atacante</param>
+    /// <param name="attackerSkill"> Hechizo que utiliza el atacante</param>
+    /// <param name="target"> Objetivo</param>
+    /// <returns>El daño total recibido</returns>
+    public int magicAttack(Character attacker, Skill attackerSkill, Character target)
+    {
+        int damage = 0;
+
+        //El atacante comprueba si acierta al objetivo
+        if (this.getMagicImpact(attacker, target))
+        {
+            //Una vez acertado calcula el daño
+            damage = this.calculateMagicalDamage(attacker, attackerSkill, target);
+        }
+
+        return damage;
+    }
+
+
     /// <summary>
     /// Comprueba si algún personaje está realizando alguna acción
     /// </summary>
@@ -198,7 +280,9 @@ public class Battle
 
     private int resolveMagicAttack(Character battleCharacter)
     {
-        int resultDamage = this.attack(battleCharacter, battleCharacter.selectedAction.target);
+        Skill selectedSkill =  battleCharacter.selectedAction.skillTarget;
+
+        int resultDamage = this.magicAttack(battleCharacter, battleCharacter.selectedAction.skillTarget, battleCharacter.selectedAction.target);
 
         if (resultDamage > 0)
         {

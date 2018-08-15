@@ -122,6 +122,22 @@ public abstract class Character : MonoBehaviour
         return result < Battle.DEFAULT_PRECISION;
     }
 
+    public virtual bool getMagicalHit(Skill skill)
+    {
+        //Genera el número atleatorio
+        int result = Dice.generateRandomNumber();
+
+        //Si el valor resultado es menor que la probabilidad por defecto, entonces habrá impacto
+        //Elemplo :
+        // valores posibles --> 0 - 100
+        // probabilidad --> 95%
+        // resultado --> 20
+        // 20 está entre (0..95) (95%) Acierto
+        // resultado --> 97
+        // 97 está entre (0..95) (95%) Fallo
+        return result < skill.precision;
+    }
+
     public abstract bool getCritical();
     public abstract int getCriticalAttack();
 

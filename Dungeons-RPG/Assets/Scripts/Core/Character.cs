@@ -28,6 +28,7 @@ public abstract class Character : MonoBehaviour
 
     //----Parámetros-----
     public int attack; //Ataque
+    public int magicalAttack; //Ataque mágico
     public int defense; //Defensa
     //----Defensa mágica----
     //----Cada atributo de defensa mágica está asociada a un tipo elemental (fuego, agua, electricidad...)

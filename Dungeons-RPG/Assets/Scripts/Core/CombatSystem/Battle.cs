@@ -93,6 +93,15 @@ public class Battle
         else
         {
             basicAttack = attacker.attack;
+
+            //Si el atacante es un heroe, debe sumar el daño del arma (en caso de que la lleve)
+            if(attacker is Hero)
+            {
+                if(((Hero) attacker).weapon != null)
+                {
+                    basicAttack += ((Hero)attacker).weapon.damage;
+                }
+            }
         }
 
         //Generamos el modificador máximo y mínimo para el ataque
@@ -112,37 +121,58 @@ public class Battle
     private int calculateMagicalDamage(Character attacker, Skill attackerSkill, Character target)
     {
         int minValue, maxValue;
-        int basicAttack;
+        int magicAttack;
         float resultAttack;
         float totalDamage;
         bool isCritical = false;
 
-        isCritical = attacker.getCritical();
+        isCritical = this.getMagicCritical(attackerSkill);
 
         if (isCritical)
         {
-            basicAttack = attacker.getCriticalAttack();
+            magicAttack = this.getMagicCriticalAttack(attacker, attackerSkill);
             this.txtLog.text += "\n" + "¡Ataque crítico!";
         }
         else
         {
-            basicAttack = attacker.attack;
+            magicAttack = attacker.magicalAttack + attackerSkill.damage;
         }
 
         //Generamos el modificador máximo y mínimo para el ataque
-        minValue = basicAttack - (int)(basicAttack * ATTACK_MODIFIER);
-        maxValue = basicAttack + (int)(basicAttack * ATTACK_MODIFIER);
+        minValue = magicAttack - (int)(magicAttack * ATTACK_MODIFIER);
+        maxValue = magicAttack + (int)(magicAttack * ATTACK_MODIFIER);
         //Obtenemos el valor resultado para el modificador de ataque
         resultAttack = Dice.generateRandomNumber(minValue, maxValue);
         //Resolvemos el ataque restandole el tanto por ciento de la defensa del objetivo
         //------------------------------------------
-        //attack = attack - attack * (defense / 100)
+        //attack = attack - attack * (magical_typed_defense / 100)
         //------------------------------------------
-        totalDamage = resultAttack - (resultAttack * ((float)target.defense / 100));
+        totalDamage = resultAttack - (resultAttack * ((float)target.getMagicalDefense(attackerSkill.type) / 100));
 
         return Mathf.FloorToInt(totalDamage);
     }
 
+    private bool getMagicCritical(Skill skill)
+    {
+        int result;
+        bool isCritical = false;
+
+        //Genera el número atleatorio 1-100
+        result = Dice.generateRandomNumber();
+
+        isCritical = result < skill.criticalAttackProbability;
+
+        return isCritical;
+    }
+
+    private int getMagicCriticalAttack(Character attacker, Skill skill)
+    {
+        int criticalAttack;
+
+        criticalAttack = Mathf.FloorToInt(attacker.magicalAttack * skill.criticalAttackModifier);
+
+        return criticalAttack;
+    }
 
     /// <summary>
     /// Resta vida a la victima de un ataque

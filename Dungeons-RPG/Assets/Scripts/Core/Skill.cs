@@ -7,6 +7,9 @@ public class Skill
     public int damage;
     public int precision;
 
+    public int criticalAttackProbability;
+    public float criticalAttackModifier;
+
     public enum ELEMENT_TYPE
     {
         FIRE = 0,

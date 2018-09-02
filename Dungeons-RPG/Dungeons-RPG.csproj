@@ -248,6 +248,7 @@
     <Compile Include="Assets\Scripts\Core\Monster.cs" />
     <Compile Include="Assets\Scripts\Core\Item.cs" />
     <Compile Include="Assets\Scripts\Core\Potion.cs" />
+    <Compile Include="Assets\Scripts\Core\Skill.cs" />
     <Compile Include="Assets\Scripts\Core\StateGameController.cs" />
     <Compile Include="Assets\Scripts\Core\Utils.cs" />
     <Compile Include="Assets\Scripts\Core\Weapon.cs" />

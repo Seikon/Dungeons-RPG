@@ -26,9 +26,14 @@ public abstract class Character : MonoBehaviour
     protected const string TXT_NAME = "txtName";
     protected const string TXT_TURN = "txtTurn";
 
-    //----Parameters-----
+    //----Parámetros-----
     public int attack; //Ataque
+    public int magicalAttack; //Ataque mágico
     public int defense; //Defensa
+    //----Defensa mágica----
+    //----Cada atributo de defensa mágica está asociada a un tipo elemental (fuego, agua, electricidad...)
+    private Dictionary<Skill.ELEMENT_TYPE, int> magicalDefenses; 
+    //......................
     public int speed; //Velocidad
     public int evasion; //Evasión
     public int life; //Vida Actual
@@ -63,6 +68,7 @@ public abstract class Character : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
+        this.magicalDefenses = new Dictionary<Skill.ELEMENT_TYPE, int>();
         this.totalLife = life;
         //Objeto de exclusión mutua
         this.objectLock = new Object();
@@ -117,6 +123,22 @@ public abstract class Character : MonoBehaviour
         return result < Battle.DEFAULT_PRECISION;
     }
 
+    public virtual bool getMagicalHit(Skill skill)
+    {
+        //Genera el número atleatorio
+        int result = Dice.generateRandomNumber();
+
+        //Si el valor resultado es menor que la probabilidad por defecto, entonces habrá impacto
+        //Elemplo :
+        // valores posibles --> 0 - 100
+        // probabilidad --> 95%
+        // resultado --> 20
+        // 20 está entre (0..95) (95%) Acierto
+        // resultado --> 97
+        // 97 está entre (0..95) (95%) Fallo
+        return result < skill.precision;
+    }
+
     public abstract bool getCritical();
     public abstract int getCriticalAttack();
 
@@ -130,6 +152,20 @@ public abstract class Character : MonoBehaviour
         int result = Dice.generateRandomNumber();
 
         return result < this.evasion;
+    }
+
+    public int getMagicalDefense(Skill.ELEMENT_TYPE type)
+    {
+        int defenseValue = 0; //el valor por defecto será no tener defensa frente a ese elementos
+
+
+        if(this.magicalDefenses.ContainsKey(type))
+        {
+            defenseValue = this.magicalDefenses[type];
+        }
+
+        return defenseValue;
+
     }
 
     public void increaseProgressTurnBar(float deltaTime)

@@ -40,14 +40,14 @@ public class BattleController : MonoBehaviour
     {
         //Crea los personajes
         Hero BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Hero>();
-        Monster Skeleton = GameObject.Find("Skeleton").GetComponent<Monster>();
-        Monster Skeleton1 = GameObject.Find("Skeleton1").GetComponent<Monster>();
-        Monster Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Monster>();
+        Skeleton Skeleton = GameObject.Find("Skeleton").GetComponent<Skeleton>();
+        Skeleton Skeleton1 = GameObject.Find("Skeleton1").GetComponent<Skeleton>();
+        //Monster Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Monster>();
 
         BrutusElPutus.battleGUID = Guid.NewGuid().ToString();
         Skeleton.battleGUID = Guid.NewGuid().ToString();
         Skeleton1.battleGUID = Guid.NewGuid().ToString();
-        Skeleton2.battleGUID = Guid.NewGuid().ToString();
+        //Skeleton2.battleGUID = Guid.NewGuid().ToString();
 
         this.acctionTurnQueue = new Queue<Character>();
 
@@ -57,7 +57,7 @@ public class BattleController : MonoBehaviour
         teamRight.Add(BrutusElPutus);
         teamLeft.Add(Skeleton);
         teamLeft.Add(Skeleton1);
-        teamLeft.Add(Skeleton2);
+        //teamLeft.Add(Skeleton2);
 
         Text txtLog = GameObject.Find("SimuladorBatalla").GetComponentInChildren<Text>();
 
@@ -65,7 +65,7 @@ public class BattleController : MonoBehaviour
 
         Skeleton.updateLifeBar();
         Skeleton1.updateLifeBar();
-        Skeleton2.updateLifeBar();
+        //Skeleton2.updateLifeBar();
         BrutusElPutus.updateLifeBar();
 
         BrutusElPutus.bag = new List<Item>();
@@ -77,7 +77,7 @@ public class BattleController : MonoBehaviour
         BrutusElPutus.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton1.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
-        Skeleton2.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
+        //Skeleton2.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
     }
 
     void Update()
@@ -132,21 +132,16 @@ public class BattleController : MonoBehaviour
                         if (!isPerforming)
                         {
                             isPerforming = true;
-                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMING);
-                            battle.executeAction(battleCharacter);
-                            battleCharacter.selectedAction = null;
-                            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.NOTHING;
-                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMED);
                             //Ahora habrá un personaje ejecutando una acción
+                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.START_PERFORM);
                         }
                         break;
 
-                    case Character.CHARACTER_BATTLE_STATE.PERFORMING:
-                        break;
-
                     case Character.CHARACTER_BATTLE_STATE.PERFORMED:
-                        battleCharacter.request = null;
+                        battle.executeAction(battleCharacter);
                         battleCharacter.progressBarTurn = Character.PROGRESS_TURN_BAR_MIN_VALUE;
+                        battleCharacter.selectedAction = null;
+                        battleCharacter.request = null;
                         battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
                         break;
                 }

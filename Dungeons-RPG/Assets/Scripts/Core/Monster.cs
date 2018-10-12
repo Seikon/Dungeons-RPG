@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Monster : Character
 {
+    protected Animator animator;
 
     public Monster(int attack, int defense, int speed, int evasion, int life) 
         : base(attack, defense, speed, evasion, life)
@@ -13,6 +14,11 @@ public class Monster : Character
     protected override void Start()
     {
         base.Start();
+
+        foreach (Animator animator in gameObject.GetComponentsInChildren<Animator>())
+        {
+            this.animator = animator;
+        }
     }
 
     

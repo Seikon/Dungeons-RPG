@@ -294,6 +294,7 @@ public class Battle
             {
                 battleCharacter.selectedAction.target.life = 0;
                 battleCharacter.selectedAction.target.setState(Character.CHARACTER_BATTLE_STATE.DEAD);
+                battleCharacter.selectedAction.target.performDeadAnimation();
                 txtLog.text += "\n" + battleCharacter.selectedAction.target.txtName.text + " ha muerto";
             }
 

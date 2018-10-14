@@ -105,8 +105,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224487221104735828}
-  - component: {fileID: 114840145706106858}
   - component: {fileID: 222687443307801046}
+  - component: {fileID: 114323575490412398}
   m_Layer: 0
   m_Name: BrutusElPutus
   m_TagString: Untagged
@@ -280,6 +280,35 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'Objetos :'
+--- !u!114 &114323575490412398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1476412975388266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce26e6308ce77f4f939a593b44ea2ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attack: 500
+  magicalAttack: 0
+  defense: 20
+  speed: 50
+  evasion: 0
+  life: 1
+  totalLife: 500
+  progressBarTurn: 0
+  battleGUID: 
+  objectLock: {fileID: 0}
+  txtName: {fileID: 0}
+  txtLife: {fileID: 0}
+  txtTurn: {fileID: 0}
+  magic: 20
+  btnBasicAttack: {fileID: 0}
+  btnItem: {fileID: 0}
+  txtItem: {fileID: 0}
+  txtListItems: []
 --- !u!114 &114457442193162790
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -447,35 +476,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114840145706106858
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1476412975388266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecb6845105d9fb7419c924800bf57262, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attack: 100
-  magicalAttack: 0
-  defense: 20
-  speed: 90
-  evasion: 10
-  life: 200
-  totalLife: 0
-  progressBarTurn: 0
-  battleGUID: 
-  objectLock: {fileID: 0}
-  txtName: {fileID: 0}
-  txtLife: {fileID: 0}
-  txtTurn: {fileID: 0}
-  magic: 10
-  btnBasicAttack: {fileID: 0}
-  btnItem: {fileID: 0}
-  txtItem: {fileID: 0}
-  txtListItems: []
 --- !u!114 &114874222324620700
 MonoBehaviour:
   m_ObjectHideFlags: 1

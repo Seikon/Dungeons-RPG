@@ -207,7 +207,6 @@ public class Hero : Character
         // 1- Selecionar el objeto
         // 2- Selecionar el personaje objetivo
         this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
-        //this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
 
         this.btnItem.gameObject.SetActive(false);
     }

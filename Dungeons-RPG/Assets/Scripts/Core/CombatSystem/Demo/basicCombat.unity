@@ -157,19 +157,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4484758149815028, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 4484758149815028, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 114818228410496206, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25,
-        type: 2}
-      propertyPath: attack
-      value: 10
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
   m_IsPrefabAsset: 0
@@ -408,8 +395,8 @@ RectTransform:
   m_Children:
   - {fileID: 2079699657}
   - {fileID: 38621314}
-  - {fileID: 1036470289}
   - {fileID: 930602134}
+  - {fileID: 1279010075}
   m_Father: {fileID: 434460004}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -457,9 +444,9 @@ Transform:
   m_Children:
   - {fileID: 1599712123}
   m_Father: {fileID: 725978056}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1036470288
+--- !u!1001 &1279010074
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -468,11 +455,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4730858691214774, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -161
+      value: -200
       objectReference: {fileID: 0}
     - target: {fileID: 4730858691214774, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -77
+      value: -75
       objectReference: {fileID: 0}
     - target: {fileID: 4730858691214774, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
       propertyPath: m_LocalPosition.z
@@ -496,62 +483,28 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4730858691214774, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1880501401350856, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
       propertyPath: m_Name
       value: Skeleton1
       objectReference: {fileID: 0}
     - target: {fileID: 4484758149815028, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 47
+      propertyPath: m_LocalPosition.x
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 4484758149815028, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 44
+      propertyPath: m_LocalPosition.y
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25, type: 2}
   m_IsPrefabAsset: 0
---- !u!4 &1036470289 stripped
+--- !u!4 &1279010075 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4730858691214774, guid: 7ea5dd471942a9c4caf7eb1fc5ee1b25,
     type: 2}
-  m_PrefabInternal: {fileID: 1036470288}
---- !u!1 &1397033023 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1476412975388266, guid: b75a2c9047087ac47baa0dc0125a3918,
-    type: 2}
-  m_PrefabInternal: {fileID: 2079699656}
---- !u!114 &1397033024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1397033023}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ce26e6308ce77f4f939a593b44ea2ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attack: 70
-  magicalAttack: 0
-  defense: 20
-  speed: 10
-  evasion: 0
-  life: 500
-  totalLife: 500
-  progressBarTurn: 0
-  battleGUID: 
-  objectLock: {fileID: 0}
-  txtName: {fileID: 0}
-  txtLife: {fileID: 0}
-  txtTurn: {fileID: 0}
-  magic: 20
-  btnBasicAttack: {fileID: 0}
-  btnItem: {fileID: 0}
-  txtItem: {fileID: 0}
-  txtListItems: []
+  m_PrefabInternal: {fileID: 1279010074}
 --- !u!1 &1599712122
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,8 +700,7 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 114840145706106858, guid: b75a2c9047087ac47baa0dc0125a3918, type: 2}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b75a2c9047087ac47baa0dc0125a3918, type: 2}
   m_IsPrefabAsset: 0
 --- !u!224 &2079699657 stripped

@@ -219,4 +219,9 @@ public abstract class Character : MonoBehaviour
         this.txtLife.text = this.life + " / " + this.totalLife;
 
     }
+
+    public void performDeadAnimation()
+    {
+        this.animator.SetBool(Utils.Utils.ANIMATION_STATE_DEAD, true);
+    }
 }

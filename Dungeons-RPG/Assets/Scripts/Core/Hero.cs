@@ -146,27 +146,43 @@ public class Hero : Character
         }
     }
 
-    private void Update()
+    protected override void Update()
     {
-        //Si le toca realizar la acción
-        if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
+        switch(this.getState())
         {
-            //Muestra los botones si no está pendiente de realizar ninguna acción
-            if(this.request == null)
-            {
-                this.btnBasicAttack.gameObject.SetActive(true);
-                this.btnItem.gameObject.SetActive(true);
-            }
+            case CHARACTER_BATTLE_STATE.WAITING_ACTION:
+                //Muestra los botones si no está pendiente de realizar ninguna acción
+                if (this.request == null)
+                {
+                    this.btnBasicAttack.gameObject.SetActive(true);
+                    this.btnItem.gameObject.SetActive(true);
+                }
 
-            //Si ya esta preparado
-            if(this.checkActionFullFilled())
-            {
-                //Marca la acción como lista y espera en la cola
-                this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
-                this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
-            }
+                //Si ya esta preparado
+                if (this.checkActionFullFilled())
+                {
+                    //Marca la acción como lista y espera en la cola
+                    this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
+                    this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                }
+                break;
+
+            //Waiting an animation
+            case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                break;
+            //Check when animation has finished
+            case CHARACTER_BATTLE_STATE.PERFORMING:
+                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                {
+                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
+                break;
         }
-        else
+         
+        //Si le toca realizar la acción
+        if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {
             this.btnBasicAttack.gameObject.SetActive(false);
             this.btnItem.gameObject.SetActive(false);

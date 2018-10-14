@@ -27,6 +27,9 @@ public abstract class Character : MonoBehaviour
     protected const string TXT_NAME = "txtName";
     protected const string TXT_TURN = "txtTurn";
 
+    //----Animación-----
+    protected Animator animator;
+
     //----Parámetros-----
     public int attack; //Ataque
     public int magicalAttack; //Ataque mágico
@@ -92,10 +95,15 @@ public abstract class Character : MonoBehaviour
 
             }
         }
+
+        foreach (Animator animator in gameObject.GetComponentsInChildren<Animator>())
+        {
+            this.animator = animator;
+        }
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
     }
 

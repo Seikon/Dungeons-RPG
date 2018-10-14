@@ -310,7 +310,6 @@ public class Battle
 
     private int resolveMagicAttack(Character battleCharacter)
     {
-        Skill selectedSkill =  battleCharacter.selectedAction.skillTarget;
 
         int resultDamage = this.magicAttack(battleCharacter, battleCharacter.selectedAction.skillTarget, battleCharacter.selectedAction.target);
 

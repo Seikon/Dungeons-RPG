@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Monster : Character
 {
-    protected Animator animator;
 
     public Monster(int attack, int defense, int speed, int evasion, int life) 
         : base(attack, defense, speed, evasion, life)
@@ -14,43 +13,52 @@ public class Monster : Character
     protected override void Start()
     {
         base.Start();
-
-        foreach (Animator animator in gameObject.GetComponentsInChildren<Animator>())
-        {
-            this.animator = animator;
-        }
     }
 
     
-    void Update()
+    protected override void Update()
     {
         //Si le toca realizar la acción
-        if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
+        switch (this.getState())
         {
-            if(this.selectedAction == null)
-            {
-                //Selecciona acción de ataque
-                this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
-                //Al ser un Monstruo la petición de acción será Lógica
-                this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ALL_ENEMIES, BattleRequest.MODE_BATTLE_REQUEST.LOGIC);
-            }
-            else
-            {
-                //Si la petición ha sido atendida
-                if(this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
+            case CHARACTER_BATTLE_STATE.WAITING_ACTION:
+                if (this.selectedAction == null)
                 {
-                    //Recupera los miembros del equipo rival y ataca atleatoriamente a uno de ellos
-                    int min = 0;
-                    int max = this.selectedAction.targets.Count - 1;
-                    int result = Dice.generateRandomNumber(min, max);
-                    Character target = this.selectedAction.targets[result];
-                    //Pone la acción a preparada
-                    this.selectedAction.target = this.selectedAction.targets[result];
-                    this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
-                    //Modifica su estado listo para entrar en la cola de acciones
-                    this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                    //Selecciona acción de ataque
+                    this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
+                    //Al ser un Monstruo la petición de acción será Lógica
+                    this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ALL_ENEMIES, BattleRequest.MODE_BATTLE_REQUEST.LOGIC);
                 }
-            }
+                else
+                {
+                    //Si la petición ha sido atendida
+                    if (this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
+                    {
+                        //Recupera los miembros del equipo rival y ataca atleatoriamente a uno de ellos
+                        int min = 0;
+                        int max = this.selectedAction.targets.Count - 1;
+                        int result = Dice.generateRandomNumber(min, max);
+                        Character target = this.selectedAction.targets[result];
+                        //Pone la acción a preparada
+                        this.selectedAction.target = this.selectedAction.targets[result];
+                        this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
+                        //Modifica su estado listo para entrar en la cola de acciones
+                        this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                    }
+                }
+                break;
+            //Waiting an animation
+            case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                break;
+            //Check when animation has finished
+            case CHARACTER_BATTLE_STATE.PERFORMING:
+                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                {
+                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
+                break;
 
         }
     }

@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Utils : MonoBehaviour {
+namespace Utils
+{
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public class Utils
+    {
+
+        public static string ANIMATION_STATE_ATTACK = "performAttack";
+
+    }
+
 }

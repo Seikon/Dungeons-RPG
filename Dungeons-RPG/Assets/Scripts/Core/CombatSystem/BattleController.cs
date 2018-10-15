@@ -39,10 +39,10 @@ public class BattleController : MonoBehaviour
     void Start()
     {
         //Crea los personajes
-        Hero BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Hero>();
+        Brutus BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Brutus>();
         Skeleton Skeleton = GameObject.Find("Skeleton").GetComponent<Skeleton>();
         Skeleton Skeleton1 = GameObject.Find("Skeleton1").GetComponent<Skeleton>();
-        //Monster Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Monster>();
+        Skeleton Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Skeleton>();
 
         BrutusElPutus.battleGUID = Guid.NewGuid().ToString();
         Skeleton.battleGUID = Guid.NewGuid().ToString();
@@ -57,7 +57,7 @@ public class BattleController : MonoBehaviour
         teamRight.Add(BrutusElPutus);
         teamLeft.Add(Skeleton);
         teamLeft.Add(Skeleton1);
-        //teamLeft.Add(Skeleton2);
+        teamLeft.Add(Skeleton2);
 
         Text txtLog = GameObject.Find("SimuladorBatalla").GetComponentInChildren<Text>();
 
@@ -65,7 +65,7 @@ public class BattleController : MonoBehaviour
 
         Skeleton.updateLifeBar();
         Skeleton1.updateLifeBar();
-        //Skeleton2.updateLifeBar();
+        Skeleton2.updateLifeBar();
         BrutusElPutus.updateLifeBar();
 
         BrutusElPutus.bag = new List<Item>();
@@ -77,7 +77,7 @@ public class BattleController : MonoBehaviour
         BrutusElPutus.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
         Skeleton1.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
-        //Skeleton2.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
+        Skeleton2.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
     }
 
     void Update()
@@ -379,8 +379,8 @@ public class BattleController : MonoBehaviour
 
         if(!this.isSelecting)
         {
-            battleHero.txtListItems = new List<Text>();
-            battleHero.txtItem.gameObject.SetActive(true);
+            battleHero.txtbagItems = new List<Text>();
+            battleHero.txtBag.gameObject.SetActive(true);
 
             for(int indItem = 0; indItem < battleHero.bag.Count; indItem++)
             {
@@ -392,18 +392,18 @@ public class BattleController : MonoBehaviour
                 itemTempComp.font = battleHero.txtName.font;
                 itemTempComp.alignment = TextAnchor.MiddleCenter;
                 itemTempComp.fontSize = battleHero.txtName.fontSize;
-                itemTempComp.color = battleHero.txtItem.color;
-                itemText.transform.SetParent(battleHero.txtItem.transform);
+                itemTempComp.color = battleHero.txtBag.color;
+                itemText.transform.SetParent(battleHero.txtBag.transform);
                 //Posición relativa a su padre
                 itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
 
-                battleHero.txtListItems.Add(itemTempComp);
+                battleHero.txtbagItems.Add(itemTempComp);
 
             }
 
             this.selectedIndex = 0;
             this.selectedItem = battleHero.bag[0];
-            battleHero.txtListItems[0].color = Color.yellow;
+            battleHero.txtbagItems[0].color = Color.yellow;
 
             this.isSelecting = true;
         }
@@ -413,24 +413,24 @@ public class BattleController : MonoBehaviour
         {
             if (this.selectedIndex > 0)
             {
-                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
                 this.selectedIndex--;
 
                 this.selectedItem = battleHero.bag[selectedIndex];
-                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.yellow;
             }
         }
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
             if (this.selectedIndex < battleHero.bag.Count - 1)
             {
-                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
                 this.selectedIndex++;
 
                 this.selectedItem = battleHero.bag[selectedIndex];
-                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.yellow;
 
             }
         }
@@ -441,16 +441,16 @@ public class BattleController : MonoBehaviour
 
             battleCharacter.selectedAction.itemTarget = this.selectedItem;
             battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
-            battleHero.txtListItems[this.selectedIndex].color = Color.white;
+            battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
             battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
 
-            foreach (Transform child in battleHero.txtItem.transform)
+            foreach (Transform child in battleHero.txtBag.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
 
-            battleHero.txtItem.gameObject.SetActive(false);
+            battleHero.txtBag.gameObject.SetActive(false);
         }
 
     }

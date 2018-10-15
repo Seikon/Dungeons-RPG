@@ -12,7 +12,9 @@ public class Hero : Character
     public Text txtUseItem;
 
     public Text txtBag;
-    public List<Text> txtListItems;
+    public Text txtActionFocused;
+
+    public List<Text> txtbagItems;
 
     public List<Item> bag;
 
@@ -26,8 +28,8 @@ public class Hero : Character
         this.magic = magic;
         this.bag = new List<Item>();
     }
+
     // El ataque básico será: attack + damage del Arma (en caso de que tenga arma)
-    
     public override int getPowerBasicAttack()
     {
         int totalDamage = 0;
@@ -108,7 +110,7 @@ public class Hero : Character
     {
         base.Start();
 
-        this.txtListItems = new List<Text>();
+        this.txtbagItems = new List<Text>();
 
         //Prepara los objetos de la interfaz gráfica
 
@@ -129,7 +131,7 @@ public class Hero : Character
 
                 case TXT_USE_ITEM:
                     this.txtUseItem = txt;
-                    //--Objeto
+                    //--Usar Objeto--
                     this.txtUseItem.gameObject.SetActive(false);
                     break;
 
@@ -145,7 +147,7 @@ public class Hero : Character
                 //Muestra los botones si no está pendiente de realizar ninguna acción
                 if (this.request == null)
                 {
-                    enableTurnOptions();
+                    this.enableTurnOptions();
                 }
 
                 //Si ya esta preparado
@@ -174,20 +176,88 @@ public class Hero : Character
         //Si le toca realizar la acción
         if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {
-            disableTurnOptions();
+            this.disableTurnOptions();
         }
     }
 
-    protected void enableTurnOptions()
+    private void enableTurnOptions()
     {
         this.txtBasicAttack.gameObject.SetActive(true);
         this.txtUseItem.gameObject.SetActive(true);
+
+        this.checkTurnInteractions();
     }
 
-    protected void disableTurnOptions()
+    private void disableTurnOptions()
     {
         this.txtBasicAttack.gameObject.SetActive(false);
         this.txtUseItem.gameObject.SetActive(false);
+    }
+
+    private void checkTurnInteractions()
+    {
+        if (this.txtActionFocused == null)
+        {
+            this.txtActionFocused = this.txtBasicAttack;
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        // Situa el foco sobre la siguiente acción
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            this.txtActionFocused.color = Color.white;
+            //Cambia la acción que tiene el foco
+            this.changeFocusedOption();
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        // Situa el foco sobre la acción anterior
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            this.txtActionFocused.color = Color.white;
+            //Cambia la acción que tiene el foco
+            this.changeFocusedOption();
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            if(this.getState() == Character.CHARACTER_BATTLE_STATE.WAITING_ACTION)
+            {
+                this.selectTurnOption();
+            }
+        }
+        
+    }
+
+    protected void changeFocusedOption()
+    {
+        switch(this.txtActionFocused.name)
+        {
+            case TXT_BASIC_ATTACK:
+                this.txtActionFocused = this.txtUseItem;
+                break;
+
+            case TXT_USE_ITEM:
+                this.txtActionFocused = this.txtBasicAttack;
+                break;
+        }
+    }
+
+    protected void selectTurnOption()
+    {
+        switch (this.txtActionFocused.name)
+        {
+            case TXT_BASIC_ATTACK:
+                this.generateBasicAttack();
+                break;
+
+            case TXT_USE_ITEM:
+                this.generateUseItem();
+                break;
+        }
+
+        this.txtActionFocused = null;
     }
 
     protected override void generateBasicAttack()

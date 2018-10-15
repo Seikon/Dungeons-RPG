@@ -335,3 +335,4 @@ C:\Dungeons-RPG\Dungeons-RPG\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.
 C:\Dungeons-RPG\Dungeons-RPG\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 C:\Dungeons-RPG\Dungeons-RPG\obj\Debug\Assembly-CSharp.dll
 C:\Dungeons-RPG\Dungeons-RPG\obj\Debug\Assembly-CSharp.pdb
+C:\Workspace\Repos\Dungeons-RPG\Dungeons-RPG\Temp\bin\Debug\UnityEditor.StandardEvents.dll

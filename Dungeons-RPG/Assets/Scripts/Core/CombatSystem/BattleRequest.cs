@@ -12,7 +12,8 @@ public class BattleRequest
         SELECT_ALL_ENEMIES = 2,
         SELECT_FRIEND = 3,
         SELECT_BAG_ITEM = 4,
-        ATTENDED = 3
+        SELECT_SKILL = 5,
+        ATTENDED = 6
     }
 
     public enum MODE_BATTLE_REQUEST

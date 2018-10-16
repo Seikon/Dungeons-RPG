@@ -36,7 +36,9 @@ public abstract class Character : MonoBehaviour
     public int defense; //Defensa
     //----Defensa mágica----
     //----Cada atributo de defensa mágica está asociada a un tipo elemental (fuego, agua, electricidad...)
-    private Dictionary<Skill.ELEMENT_TYPE, int> magicalDefenses; 
+    private Dictionary<Skill.ELEMENT_TYPE, int> magicalDefenses;
+    //----Magias----
+    public List<Skill> magics;
     //......................
     public int speed; //Velocidad
     public int evasion; //Evasión
@@ -73,6 +75,7 @@ public abstract class Character : MonoBehaviour
     protected virtual void Start()
     {
         this.magicalDefenses = new Dictionary<Skill.ELEMENT_TYPE, int>();
+        this.magics = new List<Skill>();
         this.totalLife = life;
         //Objeto de exclusión mutua
         this.objectLock = new Object();

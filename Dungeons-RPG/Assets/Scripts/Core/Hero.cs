@@ -105,8 +105,7 @@ public class Hero : Character
 
             //Esperando a la animación
             case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
-                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
-                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                this.startAnimation();
                 break;
             //Comprueba que la animación ha terminado
             case CHARACTER_BATTLE_STATE.PERFORMING:
@@ -116,7 +115,6 @@ public class Hero : Character
                 }
                 break;
         }
-
         //Si le toca realizar la acción
         if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
         {

@@ -227,4 +227,49 @@ public abstract class Character : MonoBehaviour
     {
         this.animator.SetBool(Utils.Utils.ANIMATION_STATE_DEAD, true);
     }
+
+    protected void startAnimation()
+    {
+        //Según el tipo de opción, ejecutará una animación u otra
+        switch(this.selectedAction.actionType)
+        {
+            case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                break;
+
+            case BattleAction.BATTLE_ACCTION_TYPE.MAGIC_ATTACK:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                break;
+
+            case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                break;
+        }
+        
+    }
+
+    protected void controlAnimation()
+    {
+        switch (this.selectedAction.actionType)
+        {
+            case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
+                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                {
+                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
+                break;
+
+            case BattleAction.BATTLE_ACCTION_TYPE.MAGIC_ATTACK:
+                //Para la magia, deberá ejecutar además la animación de la misma
+                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                {
+                    //this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
+                break;
+
+            case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                break;
+        }
+    }
 }

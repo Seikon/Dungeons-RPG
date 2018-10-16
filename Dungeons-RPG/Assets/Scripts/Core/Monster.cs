@@ -49,15 +49,11 @@ public class Monster : Character
                 break;
             //Espera a la animación
             case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
-                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
-                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                base.startAnimation();
                 break;
             //Comprueba cuando la animación ha terminado
             case CHARACTER_BATTLE_STATE.PERFORMING:
-                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
-                {
-                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
-                }
+                base.controlAnimation();
                 break;
 
         }

@@ -499,7 +499,7 @@ public class BattleController : MonoBehaviour
 
                 Text itemTempComp = itemText.AddComponent<Text>();
                 //-----Personalización del componente-----
-                itemTempComp.text = battleHero.magics[indItem].name;
+                itemTempComp.text = battleHero.magics[indItem].niceName;
                 itemTempComp.font = battleHero.txtName.font;
                 itemTempComp.alignment = TextAnchor.MiddleCenter;
                 itemTempComp.fontSize = battleHero.txtName.fontSize;

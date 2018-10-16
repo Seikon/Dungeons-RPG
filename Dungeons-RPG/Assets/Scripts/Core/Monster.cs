@@ -27,7 +27,7 @@ public class Monster : Character
                     //Selecciona acción de ataque
                     this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
                     //Al ser un Monstruo la petición de acción será Lógica
-                    this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ALL_ENEMIES, BattleRequest.MODE_BATTLE_REQUEST.LOGIC);
+                    this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ALL_ENEMIES, BattleRequest.MODE_BATTLE_REQUEST.LOGIC, false);
                 }
                 else
                 {

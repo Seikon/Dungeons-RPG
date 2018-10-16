@@ -265,7 +265,7 @@ public class Hero : Character
         //Selecciona acción de ataque
         this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
         //Al ser un Heroe la petición de acción será interactiva
-        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
         this.txtBasicAttack.gameObject.SetActive(false);
     }
 
@@ -277,7 +277,7 @@ public class Hero : Character
         //Constará de dos partes:
         // 1- Selecionar el objeto
         // 2- Selecionar el personaje objetivo
-        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
         this.txtUseItem.gameObject.SetActive(false);
     }
 

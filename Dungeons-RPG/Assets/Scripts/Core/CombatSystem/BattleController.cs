@@ -255,14 +255,22 @@ public class BattleController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-            battleCharacter.selectedAction.target = this.selectedTarget;
+            if (!battleCharacter.request.firstTime)
+            {
 
-            this.selectedTarget.txtName.color = Color.white;
-            this.selectedTarget.txtLife.color = Color.white;
-            this.selectedTarget.txtTurn.color = Color.white;
+                this.isSelecting = false;
+                battleCharacter.selectedAction.target = this.selectedTarget;
 
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
+            }
         }
     }
 
@@ -362,14 +370,21 @@ public class BattleController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-            battleCharacter.selectedAction.target = this.selectedTarget;
+            if (!battleCharacter.request.firstTime)
+            {
+                this.isSelecting = false;
+                battleCharacter.selectedAction.target = this.selectedTarget;
 
-            this.selectedTarget.txtName.color = Color.white;
-            this.selectedTarget.txtLife.color = Color.white;
-            this.selectedTarget.txtTurn.color = Color.white;
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
 
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
+            }
         }
     }
 
@@ -437,20 +452,28 @@ public class BattleController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-
-            battleCharacter.selectedAction.itemTarget = this.selectedItem;
-            battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
-            battleHero.txtbagItems[this.selectedIndex].color = Color.white;
-
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
-
-            foreach (Transform child in battleHero.txtBag.transform)
+            if (!battleCharacter.request.firstTime)
             {
-                GameObject.Destroy(child.gameObject);
+                this.isSelecting = false;
+
+                battleCharacter.selectedAction.itemTarget = this.selectedItem;
+                battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+
+                foreach (Transform child in battleHero.txtBag.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+
+                battleHero.txtBag.gameObject.SetActive(false);
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
             }
 
-            battleHero.txtBag.gameObject.SetActive(false);
         }
 
     }

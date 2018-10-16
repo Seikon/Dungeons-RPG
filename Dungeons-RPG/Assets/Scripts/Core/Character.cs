@@ -13,9 +13,10 @@ public abstract class Character : MonoBehaviour
         WAITING_ACTION = 2, // EL PERSONAJE ESTÁ ESPERANDO POR EL USUARIO / IA PARA REALIZAR UNA ACCIÓN
         WAITING_QUEUE = 3, // EL PERSONAJE HA SELECCIONADO UNA ACCIÓN Y ESTÁ ESPERANDO A SER INTRODUCIDO EN LA COLA DE TURNOS DE ACCIÓN
         QUEUED = 4, // EL PERSONAJE HA SIDO INTRODUCIDO EN LA COLA DE TURNOS DE ACCIÓN Y ESPERA A QUE SU ACCIÓN SEA EJECUTADA
-        PERFORMING = 5, // EL PERSONAJE ESTÁ REALIZANDO SU ACCIÓN
-        PERFORMED = 6, // EL PERSONAJE HA FINALIZADO SU ACCIÓN
-        DEAD = 7, // EL PERSONAJE HA REDUCIDO SU VIDA A 0
+        START_PERFORM = 5, // EL PERSONAJE HA INICIALIZADO SU ACCIÓN (ANIMACIÓN)
+        PERFORMING = 6, // EL PERSONAJE ESTÁ EJECUTANDO SU ACCIÓN (ANIMACIÓN)
+        PERFORMED = 7, // EL PERSONAJE HA FINALIZADO SU ACCIÓN
+        DEAD = 8, // EL PERSONAJE HA REDUCIDO SU VIDA A 0
     }
 
     public static int PROGRESS_TURN_BAR_MIN_VALUE = 0;
@@ -25,6 +26,9 @@ public abstract class Character : MonoBehaviour
     protected const string TXT_LIFE = "txtLife";
     protected const string TXT_NAME = "txtName";
     protected const string TXT_TURN = "txtTurn";
+
+    //----Animación-----
+    protected Animator animator;
 
     //----Parámetros-----
     public int attack; //Ataque
@@ -91,10 +95,15 @@ public abstract class Character : MonoBehaviour
 
             }
         }
+
+        foreach (Animator animator in gameObject.GetComponentsInChildren<Animator>())
+        {
+            this.animator = animator;
+        }
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
     }
 
@@ -209,5 +218,10 @@ public abstract class Character : MonoBehaviour
 
         this.txtLife.text = this.life + " / " + this.totalLife;
 
+    }
+
+    public void performDeadAnimation()
+    {
+        this.animator.SetBool(Utils.Utils.ANIMATION_STATE_DEAD, true);
     }
 }

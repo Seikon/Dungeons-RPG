@@ -294,6 +294,7 @@ public class Battle
             {
                 battleCharacter.selectedAction.target.life = 0;
                 battleCharacter.selectedAction.target.setState(Character.CHARACTER_BATTLE_STATE.DEAD);
+                battleCharacter.selectedAction.target.performDeadAnimation();
                 txtLog.text += "\n" + battleCharacter.selectedAction.target.txtName.text + " ha muerto";
             }
 
@@ -310,7 +311,6 @@ public class Battle
 
     private int resolveMagicAttack(Character battleCharacter)
     {
-        Skill selectedSkill =  battleCharacter.selectedAction.skillTarget;
 
         int resultDamage = this.magicAttack(battleCharacter, battleCharacter.selectedAction.skillTarget, battleCharacter.selectedAction.target);
 

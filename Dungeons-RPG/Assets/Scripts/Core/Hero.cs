@@ -8,17 +8,19 @@ public class Hero : Character
     public int magic; //Puntos de mágia (PM)
     public  Weapon weapon; //Arma
 
-    public Button btnBasicAttack;
-    public Button btnItem;
+    public Text txtBasicAttack;
+    public Text txtUseItem;
 
-    public Text txtItem;
-    public List<Text> txtListItems;
+    public Text txtBag;
+    public Text txtActionFocused;
+
+    public List<Text> txtbagItems;
 
     public List<Item> bag;
 
-    private const string  BTN_BASIC_ATTACK = "btnBasicAttack";
-    private const string BTN_ITEM = "btnItem";
-    private const string TXT_ITEM = "txtItem";
+    private const string TXT_BASIC_ATTACK = "txtBasicAttack";
+    private const string TXT_USE_ITEM = "txtUseItem";
+    private const string TXT_BAG = "txtBag";
 
     public Hero(int attack, int defense, int speed, int evasion, int life, int magic) 
         : base(attack, defense, speed, evasion, life)
@@ -26,8 +28,8 @@ public class Hero : Character
         this.magic = magic;
         this.bag = new List<Item>();
     }
+
     // El ataque básico será: attack + damage del Arma (en caso de que tenga arma)
-    
     public override int getPowerBasicAttack()
     {
         int totalDamage = 0;
@@ -108,7 +110,7 @@ public class Hero : Character
     {
         base.Start();
 
-        this.txtListItems = new List<Text>();
+        this.txtbagItems = new List<Text>();
 
         //Prepara los objetos de la interfaz gráfica
 
@@ -116,61 +118,146 @@ public class Hero : Character
         {
             switch (txt.name)
             {
-                case TXT_ITEM:
-                    this.txtItem = txt;
-                    this.txtItem.gameObject.SetActive(false);
+                case TXT_BAG:
+                    this.txtBag = txt;
+                    this.txtBag.gameObject.SetActive(false);
                     break;
 
-            }
-        }
-
-        foreach (Button btn in this.gameObject.GetComponentsInChildren<Button>())
-        {
-            switch (btn.name)
-            {
-                case BTN_BASIC_ATTACK:
-                    this.btnBasicAttack = btn;
+                case TXT_BASIC_ATTACK:
+                    this.txtBasicAttack = txt;
                     //--Ataque básico--
-                    this.btnBasicAttack.onClick.AddListener(this.generateBasicAttack);
-                    this.btnBasicAttack.gameObject.SetActive(false);
+                    this.txtBasicAttack.gameObject.SetActive(false);
                     break;
 
-                case BTN_ITEM:
-                    this.btnItem = btn;
-                    //--Objeto
-                    this.btnItem.onClick.AddListener(this.generateUseItem);
-                    this.btnItem.gameObject.SetActive(false);
+                case TXT_USE_ITEM:
+                    this.txtUseItem = txt;
+                    //--Usar Objeto--
+                    this.txtUseItem.gameObject.SetActive(false);
                     break;
 
             }
         }
     }
 
-    private void Update()
+    protected override void Update()
     {
-        //Si le toca realizar la acción
-        if (this.getState() == CHARACTER_BATTLE_STATE.WAITING_ACTION)
+        switch(this.getState())
         {
-            //Muestra los botones si no está pendiente de realizar ninguna acción
-            if(this.request == null)
-            {
-                this.btnBasicAttack.gameObject.SetActive(true);
-                this.btnItem.gameObject.SetActive(true);
-            }
+            case CHARACTER_BATTLE_STATE.WAITING_ACTION:
+                //Muestra los botones si no está pendiente de realizar ninguna acción
+                if (this.request == null)
+                {
+                    this.enableTurnOptions();
+                }
 
-            //Si ya esta preparado
-            if(this.checkActionFullFilled())
+                //Si ya esta preparado
+                if (this.checkActionFullFilled())
+                {
+                    //Marca la acción como lista y espera en la cola
+                    this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
+                    this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                }
+                break;
+
+            //Waiting an animation
+            case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
+                break;
+            //Check when animation has finished
+            case CHARACTER_BATTLE_STATE.PERFORMING:
+                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                {
+                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
+                break;
+        }
+         
+        //Si le toca realizar la acción
+        if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
+        {
+            this.disableTurnOptions();
+        }
+    }
+
+    private void enableTurnOptions()
+    {
+        this.txtBasicAttack.gameObject.SetActive(true);
+        this.txtUseItem.gameObject.SetActive(true);
+
+        this.checkTurnInteractions();
+    }
+
+    private void disableTurnOptions()
+    {
+        this.txtBasicAttack.gameObject.SetActive(false);
+        this.txtUseItem.gameObject.SetActive(false);
+    }
+
+    private void checkTurnInteractions()
+    {
+        if (this.txtActionFocused == null)
+        {
+            this.txtActionFocused = this.txtBasicAttack;
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        // Situa el foco sobre la siguiente acción
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            this.txtActionFocused.color = Color.white;
+            //Cambia la acción que tiene el foco
+            this.changeFocusedOption();
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        // Situa el foco sobre la acción anterior
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            this.txtActionFocused.color = Color.white;
+            //Cambia la acción que tiene el foco
+            this.changeFocusedOption();
+            this.txtActionFocused.color = Color.yellow;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            if(this.getState() == Character.CHARACTER_BATTLE_STATE.WAITING_ACTION)
             {
-                //Marca la acción como lista y espera en la cola
-                this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
-                this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                this.selectTurnOption();
             }
         }
-        else
+        
+    }
+
+    protected void changeFocusedOption()
+    {
+        switch(this.txtActionFocused.name)
         {
-            this.btnBasicAttack.gameObject.SetActive(false);
-            this.btnItem.gameObject.SetActive(false);
+            case TXT_BASIC_ATTACK:
+                this.txtActionFocused = this.txtUseItem;
+                break;
+
+            case TXT_USE_ITEM:
+                this.txtActionFocused = this.txtBasicAttack;
+                break;
         }
+    }
+
+    protected void selectTurnOption()
+    {
+        switch (this.txtActionFocused.name)
+        {
+            case TXT_BASIC_ATTACK:
+                this.generateBasicAttack();
+                break;
+
+            case TXT_USE_ITEM:
+                this.generateUseItem();
+                break;
+        }
+
+        this.txtActionFocused = null;
     }
 
     protected override void generateBasicAttack()
@@ -178,8 +265,8 @@ public class Hero : Character
         //Selecciona acción de ataque
         this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK, null);
         //Al ser un Heroe la petición de acción será interactiva
-        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
-        this.btnBasicAttack.gameObject.SetActive(false);
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
+        this.txtBasicAttack.gameObject.SetActive(false);
     }
 
     private void generateUseItem()
@@ -190,10 +277,8 @@ public class Hero : Character
         //Constará de dos partes:
         // 1- Selecionar el objeto
         // 2- Selecionar el personaje objetivo
-        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
-        //this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE);
-
-        this.btnItem.gameObject.SetActive(false);
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
+        this.txtUseItem.gameObject.SetActive(false);
     }
 
     /// <summary>

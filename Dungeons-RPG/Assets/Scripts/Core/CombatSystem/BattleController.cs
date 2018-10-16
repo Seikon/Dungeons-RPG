@@ -39,15 +39,15 @@ public class BattleController : MonoBehaviour
     void Start()
     {
         //Crea los personajes
-        Hero BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Hero>();
-        Monster Skeleton = GameObject.Find("Skeleton").GetComponent<Monster>();
-        Monster Skeleton1 = GameObject.Find("Skeleton1").GetComponent<Monster>();
-        Monster Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Monster>();
+        Brutus BrutusElPutus = GameObject.Find("BrutusElPutus").GetComponent<Brutus>();
+        Skeleton Skeleton = GameObject.Find("Skeleton").GetComponent<Skeleton>();
+        Skeleton Skeleton1 = GameObject.Find("Skeleton1").GetComponent<Skeleton>();
+        Skeleton Skeleton2 = GameObject.Find("Skeleton2").GetComponent<Skeleton>();
 
         BrutusElPutus.battleGUID = Guid.NewGuid().ToString();
         Skeleton.battleGUID = Guid.NewGuid().ToString();
         Skeleton1.battleGUID = Guid.NewGuid().ToString();
-        Skeleton2.battleGUID = Guid.NewGuid().ToString();
+        //Skeleton2.battleGUID = Guid.NewGuid().ToString();
 
         this.acctionTurnQueue = new Queue<Character>();
 
@@ -132,21 +132,16 @@ public class BattleController : MonoBehaviour
                         if (!isPerforming)
                         {
                             isPerforming = true;
-                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMING);
-                            battle.executeAction(battleCharacter);
-                            battleCharacter.selectedAction = null;
-                            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.NOTHING;
-                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.PERFORMED);
                             //Ahora habrá un personaje ejecutando una acción
+                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.START_PERFORM);
                         }
                         break;
 
-                    case Character.CHARACTER_BATTLE_STATE.PERFORMING:
-                        break;
-
                     case Character.CHARACTER_BATTLE_STATE.PERFORMED:
-                        battleCharacter.request = null;
+                        battle.executeAction(battleCharacter);
                         battleCharacter.progressBarTurn = Character.PROGRESS_TURN_BAR_MIN_VALUE;
+                        battleCharacter.selectedAction = null;
+                        battleCharacter.request = null;
                         battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
                         break;
                 }
@@ -260,14 +255,22 @@ public class BattleController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-            battleCharacter.selectedAction.target = this.selectedTarget;
+            if (!battleCharacter.request.firstTime)
+            {
 
-            this.selectedTarget.txtName.color = Color.white;
-            this.selectedTarget.txtLife.color = Color.white;
-            this.selectedTarget.txtTurn.color = Color.white;
+                this.isSelecting = false;
+                battleCharacter.selectedAction.target = this.selectedTarget;
 
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
+            }
         }
     }
 
@@ -367,14 +370,21 @@ public class BattleController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-            battleCharacter.selectedAction.target = this.selectedTarget;
+            if (!battleCharacter.request.firstTime)
+            {
+                this.isSelecting = false;
+                battleCharacter.selectedAction.target = this.selectedTarget;
 
-            this.selectedTarget.txtName.color = Color.white;
-            this.selectedTarget.txtLife.color = Color.white;
-            this.selectedTarget.txtTurn.color = Color.white;
+                this.selectedTarget.txtName.color = Color.white;
+                this.selectedTarget.txtLife.color = Color.white;
+                this.selectedTarget.txtTurn.color = Color.white;
 
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
+            }
         }
     }
 
@@ -384,8 +394,8 @@ public class BattleController : MonoBehaviour
 
         if(!this.isSelecting)
         {
-            battleHero.txtListItems = new List<Text>();
-            battleHero.txtItem.gameObject.SetActive(true);
+            battleHero.txtbagItems = new List<Text>();
+            battleHero.txtBag.gameObject.SetActive(true);
 
             for(int indItem = 0; indItem < battleHero.bag.Count; indItem++)
             {
@@ -397,18 +407,18 @@ public class BattleController : MonoBehaviour
                 itemTempComp.font = battleHero.txtName.font;
                 itemTempComp.alignment = TextAnchor.MiddleCenter;
                 itemTempComp.fontSize = battleHero.txtName.fontSize;
-                itemTempComp.color = battleHero.txtItem.color;
-                itemText.transform.SetParent(battleHero.txtItem.transform);
+                itemTempComp.color = battleHero.txtBag.color;
+                itemText.transform.SetParent(battleHero.txtBag.transform);
                 //Posición relativa a su padre
                 itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
 
-                battleHero.txtListItems.Add(itemTempComp);
+                battleHero.txtbagItems.Add(itemTempComp);
 
             }
 
             this.selectedIndex = 0;
             this.selectedItem = battleHero.bag[0];
-            battleHero.txtListItems[0].color = Color.yellow;
+            battleHero.txtbagItems[0].color = Color.yellow;
 
             this.isSelecting = true;
         }
@@ -418,44 +428,52 @@ public class BattleController : MonoBehaviour
         {
             if (this.selectedIndex > 0)
             {
-                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
                 this.selectedIndex--;
 
                 this.selectedItem = battleHero.bag[selectedIndex];
-                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.yellow;
             }
         }
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
             if (this.selectedIndex < battleHero.bag.Count - 1)
             {
-                battleHero.txtListItems[this.selectedIndex].color = Color.white;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
                 this.selectedIndex++;
 
                 this.selectedItem = battleHero.bag[selectedIndex];
-                battleHero.txtListItems[this.selectedIndex].color = Color.yellow;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.yellow;
 
             }
         }
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            this.isSelecting = false;
-
-            battleCharacter.selectedAction.itemTarget = this.selectedItem;
-            battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
-            battleHero.txtListItems[this.selectedIndex].color = Color.white;
-
-            battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
-
-            foreach (Transform child in battleHero.txtItem.transform)
+            if (!battleCharacter.request.firstTime)
             {
-                GameObject.Destroy(child.gameObject);
+                this.isSelecting = false;
+
+                battleCharacter.selectedAction.itemTarget = this.selectedItem;
+                battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
+                battleHero.txtbagItems[this.selectedIndex].color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+
+                foreach (Transform child in battleHero.txtBag.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+
+                battleHero.txtBag.gameObject.SetActive(false);
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
             }
 
-            battleHero.txtItem.gameObject.SetActive(false);
         }
 
     }

@@ -29,6 +29,8 @@ public abstract class Character : MonoBehaviour
 
     //----Animación-----
     protected Animator animator;
+    private bool animationCreated;
+    private GameObject animationSkil;
 
     //----Parámetros-----
     public int attack; //Ataque
@@ -244,6 +246,8 @@ public abstract class Character : MonoBehaviour
                 break;
 
             case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
+                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
                 break;
         }
         
@@ -254,7 +258,7 @@ public abstract class Character : MonoBehaviour
         switch (this.selectedAction.actionType)
         {
             case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
-                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
+                if (!this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK))
                 {
                     this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
                 }
@@ -264,11 +268,36 @@ public abstract class Character : MonoBehaviour
                 //Para la magia, deberá ejecutar además la animación de la misma
                 if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
                 {
-                    //this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                    if(!this.animationCreated)
+                    {
+                        
+                        //Crea el game object en función del nombre al que referencia
+                        animationSkil = (GameObject)Instantiate(Resources.Load("Prefabs/Skills/" + this.selectedAction.skillTarget.name));
+                        animationSkil.transform.SetParent(this.transform);
+                        animationSkil.transform.SetPositionAndRotation(this.selectedAction.target.transform.position, this.selectedAction.target.transform.rotation);
+                        //Notifica que ha creado la animación
+                        this.animationCreated = true;
+                    }
+                    else
+                    {
+                        //Comprueba que la animación ha finalizado
+                        if (animationSkil.gameObject.GetComponentsInChildren<Animator>()[0].GetBool(Utils.Utils.ANIMATION_SKILL_FINISHED))
+                        {
+                            //Elimina el game Object y finaliza
+                            Destroy(animationSkil);
+                            this.animationCreated = false;
+                            this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                        }
+
+                    }
                 }
                 break;
 
             case BattleAction.BATTLE_ACCTION_TYPE.USE_ITEM:
+                if (!this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK))
+                {
+                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
+                }
                 break;
         }
     }

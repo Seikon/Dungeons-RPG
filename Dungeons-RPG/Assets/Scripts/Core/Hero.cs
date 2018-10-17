@@ -105,14 +105,11 @@ public class Hero : Character
 
             //Esperando a la animación
             case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
-                this.startAnimation();
+                base.startAnimation();
                 break;
             //Comprueba que la animación ha terminado
             case CHARACTER_BATTLE_STATE.PERFORMING:
-                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
-                {
-                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
-                }
+                base.controlAnimation();
                 break;
         }
         //Si le toca realizar la acción
@@ -280,8 +277,6 @@ public class Hero : Character
         }
         
     }
-
-
 
     protected void selectTurnOption()
     {

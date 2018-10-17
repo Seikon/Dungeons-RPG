@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Animations\AttackBehaviour.cs" />
     <Compile Include="Assets\Scripts\Animations\DeadBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Animations\SkillFinishedBehaviour.cs" />
     <Compile Include="Assets\Scripts\Core\Brutus.cs" />
     <Compile Include="Assets\Scripts\Core\Character.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\Battle.cs" />

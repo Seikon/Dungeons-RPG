@@ -9,16 +9,25 @@ public class Hero : Character
     public  Weapon weapon; //Arma
 
     public Text txtBasicAttack;
-    public Text txtUseItem;
 
+    public Text txtMagicAttack;
+    public Text txtSkillsList;
+
+    public Text txtUseItem;
     public Text txtBag;
+
     public Text txtActionFocused;
 
     public List<Text> txtbagItems;
+    public List<Text> txtSkillItems;
 
     public List<Item> bag;
 
     private const string TXT_BASIC_ATTACK = "txtBasicAttack";
+
+    private const string TXT_MAGIC_ATTACK = "txtMagic";
+    private const string TXT_SKILL_LIST = "txtSkillsList";
+
     private const string TXT_USE_ITEM = "txtUseItem";
     private const string TXT_BAG = "txtBag";
 
@@ -27,6 +36,87 @@ public class Hero : Character
     {
         this.magic = magic;
         this.bag = new List<Item>();
+    }
+
+    // Use this for initialization
+    protected override void Start()
+    {
+        base.Start();
+
+        this.txtbagItems = new List<Text>();
+
+        //Prepara los objetos de la interfaz gráfica
+
+        foreach (Text txt in gameObject.GetComponentsInChildren<Text>())
+        {
+            switch (txt.name)
+            {
+                case TXT_BAG:
+                    this.txtBag = txt;
+                    this.txtBag.gameObject.SetActive(false);
+                    break;
+
+                case TXT_SKILL_LIST:
+                    this.txtSkillsList = txt;
+                    this.txtSkillsList.gameObject.SetActive(false);
+                    break;
+
+                case TXT_BASIC_ATTACK:
+                    this.txtBasicAttack = txt;
+                    //--Ataque básico--
+                    this.txtBasicAttack.gameObject.SetActive(false);
+                    break;
+
+                case TXT_USE_ITEM:
+                    this.txtUseItem = txt;
+                    //--Usar Objeto--
+                    this.txtUseItem.gameObject.SetActive(false);
+                    break;
+
+                case TXT_MAGIC_ATTACK:
+                    this.txtMagicAttack = txt;
+                    //--Ataque Mágico
+                    this.txtMagicAttack.gameObject.SetActive(false);
+                    break;
+
+            }
+        }
+    }
+
+    protected override void Update()
+    {
+        switch (this.getState())
+        {
+            case CHARACTER_BATTLE_STATE.WAITING_ACTION:
+                //Muestra los botones si no está pendiente de realizar ninguna acción
+                if (this.request == null)
+                {
+                    this.enableTurnOptions();
+                }
+
+                //Si ya esta preparado
+                if (this.checkActionFullFilled())
+                {
+                    //Marca la acción como lista y espera en la cola
+                    this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
+                    this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
+                }
+                break;
+
+            //Esperando a la animación
+            case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
+                base.startAnimation();
+                break;
+            //Comprueba que la animación ha terminado
+            case CHARACTER_BATTLE_STATE.PERFORMING:
+                base.controlAnimation();
+                break;
+        }
+        //Si le toca realizar la acción
+        if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
+        {
+            this.disableTurnOptions();
+        }
     }
 
     // El ataque básico será: attack + damage del Arma (en caso de que tenga arma)
@@ -105,84 +195,10 @@ public class Hero : Character
         return criticalAttack;
     }
 
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-
-        this.txtbagItems = new List<Text>();
-
-        //Prepara los objetos de la interfaz gráfica
-
-        foreach (Text txt in gameObject.GetComponentsInChildren<Text>())
-        {
-            switch (txt.name)
-            {
-                case TXT_BAG:
-                    this.txtBag = txt;
-                    this.txtBag.gameObject.SetActive(false);
-                    break;
-
-                case TXT_BASIC_ATTACK:
-                    this.txtBasicAttack = txt;
-                    //--Ataque básico--
-                    this.txtBasicAttack.gameObject.SetActive(false);
-                    break;
-
-                case TXT_USE_ITEM:
-                    this.txtUseItem = txt;
-                    //--Usar Objeto--
-                    this.txtUseItem.gameObject.SetActive(false);
-                    break;
-
-            }
-        }
-    }
-
-    protected override void Update()
-    {
-        switch(this.getState())
-        {
-            case CHARACTER_BATTLE_STATE.WAITING_ACTION:
-                //Muestra los botones si no está pendiente de realizar ninguna acción
-                if (this.request == null)
-                {
-                    this.enableTurnOptions();
-                }
-
-                //Si ya esta preparado
-                if (this.checkActionFullFilled())
-                {
-                    //Marca la acción como lista y espera en la cola
-                    this.selectedAction.actionState = BattleAction.BATTLE_ACTION_STATE.READY;
-                    this.setState(CHARACTER_BATTLE_STATE.WAITING_QUEUE);
-                }
-                break;
-
-            //Waiting an animation
-            case Character.CHARACTER_BATTLE_STATE.START_PERFORM:
-                this.animator.SetBool(Utils.Utils.ANIMATION_STATE_ATTACK, true);
-                this.setState(CHARACTER_BATTLE_STATE.PERFORMING);
-                break;
-            //Check when animation has finished
-            case CHARACTER_BATTLE_STATE.PERFORMING:
-                if (this.animator.GetBool(Utils.Utils.ANIMATION_STATE_ATTACK) == false)
-                {
-                    this.setState(CHARACTER_BATTLE_STATE.PERFORMED);
-                }
-                break;
-        }
-         
-        //Si le toca realizar la acción
-        if (this.getState() != CHARACTER_BATTLE_STATE.WAITING_ACTION)
-        {
-            this.disableTurnOptions();
-        }
-    }
-
     private void enableTurnOptions()
     {
         this.txtBasicAttack.gameObject.SetActive(true);
+        this.txtMagicAttack.gameObject.SetActive(true);
         this.txtUseItem.gameObject.SetActive(true);
 
         this.checkTurnInteractions();
@@ -190,7 +206,12 @@ public class Hero : Character
 
     private void disableTurnOptions()
     {
+        this.txtBasicAttack.color = Color.white;
+        this.txtMagicAttack.color = Color.white;
+        this.txtUseItem.color = Color.white;
+
         this.txtBasicAttack.gameObject.SetActive(false);
+        this.txtMagicAttack.gameObject.SetActive(false);
         this.txtUseItem.gameObject.SetActive(false);
     }
 
@@ -207,7 +228,20 @@ public class Hero : Character
         {
             this.txtActionFocused.color = Color.white;
             //Cambia la acción que tiene el foco
-            this.changeFocusedOption();
+            switch (this.txtActionFocused.name)
+            {
+                case TXT_BASIC_ATTACK:
+                    this.txtActionFocused = this.txtUseItem;
+                    break;
+
+                case TXT_MAGIC_ATTACK:
+                    this.txtActionFocused = this.txtBasicAttack;
+                    break;
+
+                case TXT_USE_ITEM:
+                    this.txtActionFocused = this.txtMagicAttack;
+                    break;
+            }
             this.txtActionFocused.color = Color.yellow;
         }
 
@@ -216,7 +250,21 @@ public class Hero : Character
         {
             this.txtActionFocused.color = Color.white;
             //Cambia la acción que tiene el foco
-            this.changeFocusedOption();
+            switch (this.txtActionFocused.name)
+            {
+                case TXT_BASIC_ATTACK:
+                    this.txtActionFocused = this.txtMagicAttack;
+                    break;
+
+                case TXT_MAGIC_ATTACK:
+                    this.txtActionFocused = this.txtUseItem;
+                    break;
+
+                case TXT_USE_ITEM:
+                    this.txtActionFocused = this.txtBasicAttack;
+                    break;
+            }
+            
             this.txtActionFocused.color = Color.yellow;
         }
 
@@ -230,20 +278,6 @@ public class Hero : Character
         
     }
 
-    protected void changeFocusedOption()
-    {
-        switch(this.txtActionFocused.name)
-        {
-            case TXT_BASIC_ATTACK:
-                this.txtActionFocused = this.txtUseItem;
-                break;
-
-            case TXT_USE_ITEM:
-                this.txtActionFocused = this.txtBasicAttack;
-                break;
-        }
-    }
-
     protected void selectTurnOption()
     {
         switch (this.txtActionFocused.name)
@@ -254,6 +288,10 @@ public class Hero : Character
 
             case TXT_USE_ITEM:
                 this.generateUseItem();
+                break;
+
+            case TXT_MAGIC_ATTACK:
+                this.generateMagicAttack();
                 break;
         }
 
@@ -267,6 +305,23 @@ public class Hero : Character
         //Al ser un Heroe la petición de acción será interactiva
         this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
         this.txtBasicAttack.gameObject.SetActive(false);
+        this.txtMagicAttack.gameObject.SetActive(false);
+        this.txtUseItem.gameObject.SetActive(false);
+    }
+
+    private void generateMagicAttack()
+    {
+        //Selecciona acción de magia
+        this.selectedAction = new BattleAction(BattleAction.BATTLE_ACCTION_TYPE.MAGIC_ATTACK, null);
+        //Al ser un Heroe la petición de acción será interactiva
+        //Consta de dos partes
+        // 1- Seleccionar el hechizo (Skill)
+        // 2- Seleccionar el personaje objetivo
+        this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_SKILL, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
+        this.txtBasicAttack.gameObject.SetActive(false);
+        this.txtMagicAttack.gameObject.SetActive(false);
+        this.txtUseItem.gameObject.SetActive(false);
+
     }
 
     private void generateUseItem()
@@ -278,6 +333,8 @@ public class Hero : Character
         // 1- Selecionar el objeto
         // 2- Selecionar el personaje objetivo
         this.request = new BattleRequest(BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM, BattleRequest.MODE_BATTLE_REQUEST.INTERACTIVE, true);
+        this.txtBasicAttack.gameObject.SetActive(false);
+        this.txtMagicAttack.gameObject.SetActive(false);
         this.txtUseItem.gameObject.SetActive(false);
     }
 
@@ -301,6 +358,15 @@ public class Hero : Character
                 //--Ataque básico--
                 case BattleAction.BATTLE_ACCTION_TYPE.BASIC_ATTACK:
                     if (this.selectedAction.target != null && 
+                        this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
+                    {
+                        isFullFilled = true;
+                    }
+                    break;
+                //--Ataque Mágico
+                case BattleAction.BATTLE_ACCTION_TYPE.MAGIC_ATTACK:
+                    if (this.selectedAction.target != null &&
+                        this.selectedAction.skillTarget != null &&
                         this.request.state == BattleRequest.STATE_BATTLE_REQUEST.ATTENDED)
                     {
                         isFullFilled = true;

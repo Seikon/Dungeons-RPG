@@ -15,6 +15,7 @@ public class Brutus : Hero
     protected override void Start()
     {
         base.Start();
+        this.magics.Add(new FireBall());
     }
 
     protected override void Update()

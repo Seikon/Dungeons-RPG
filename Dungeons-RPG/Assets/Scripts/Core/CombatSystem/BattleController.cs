@@ -17,6 +17,7 @@ public class BattleController : MonoBehaviour
 
     Character selectedTarget;
     Item selectedItem;
+    Skill selectedSkill;
     List<Character> selectedTargets;
 
     Text selectedTextItem;
@@ -176,6 +177,10 @@ public class BattleController : MonoBehaviour
 
             case BattleRequest.STATE_BATTLE_REQUEST.SELECT_BAG_ITEM:
                 this.activateSelectItem(battleChracter);
+                break;
+
+            case BattleRequest.STATE_BATTLE_REQUEST.SELECT_SKILL:
+                this.activateSelectSkill(battleChracter);
                 break;
 
             default:
@@ -460,7 +465,7 @@ public class BattleController : MonoBehaviour
                 battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
                 battleHero.txtbagItems[this.selectedIndex].color = Color.white;
 
-                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.ATTENDED;
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.SELECT_FRIEND;
 
                 foreach (Transform child in battleHero.txtBag.transform)
                 {
@@ -476,6 +481,98 @@ public class BattleController : MonoBehaviour
 
         }
 
+    }
+
+    private void activateSelectSkill(Character battleCharacter)
+    {
+        Hero battleHero = (Hero)battleCharacter;
+
+        if (!this.isSelecting)
+        {
+            battleHero.txtSkillItems = new List<Text>();
+            battleHero.txtSkillsList.gameObject.SetActive(true);
+
+            for (int indItem = 0; indItem < battleHero.magics.Count; indItem++)
+            {
+                //-----Creación del componente-----
+                GameObject itemText = new GameObject("Skill" + indItem);
+
+                Text itemTempComp = itemText.AddComponent<Text>();
+                //-----Personalización del componente-----
+                itemTempComp.text = battleHero.magics[indItem].niceName;
+                itemTempComp.font = battleHero.txtName.font;
+                itemTempComp.alignment = TextAnchor.MiddleCenter;
+                itemTempComp.fontSize = battleHero.txtName.fontSize;
+                itemTempComp.color = battleHero.txtMagicAttack.color;
+                itemText.transform.SetParent(battleHero.txtSkillsList.transform);
+                //Posición relativa a su padre
+                itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);
+                
+                battleHero.txtSkillItems.Add(itemTempComp);
+
+                itemText.SetActive(true);
+
+            }
+
+            this.selectedIndex = 0;
+            this.selectedSkill = battleHero.magics[0];
+            battleHero.txtSkillItems[0].color = Color.yellow;
+
+            this.isSelecting = true;
+        }
+
+        //Captura los eventos de selección de objetivo
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (this.selectedIndex > 0)
+            {
+                battleHero.txtSkillItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex--;
+
+                this.selectedSkill = battleHero.magics[selectedIndex];
+                battleHero.txtSkillItems[this.selectedIndex].color = Color.yellow;
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            if (this.selectedIndex < battleHero.magics.Count - 1)
+            {
+                battleHero.txtSkillItems[this.selectedIndex].color = Color.white;
+
+                this.selectedIndex++;
+
+                this.selectedSkill = battleHero.magics[selectedIndex];
+                battleHero.txtSkillItems[this.selectedIndex].color = Color.yellow;
+
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            if (!battleCharacter.request.firstTime)
+            {
+                this.isSelecting = false;
+
+                battleCharacter.selectedAction.skillTarget = this.selectedSkill;
+                battleCharacter.selectedAction.selectedIndex = this.selectedIndex;
+                battleHero.txtSkillItems[this.selectedIndex].color = Color.white;
+
+                battleCharacter.request.state = BattleRequest.STATE_BATTLE_REQUEST.SELECT_ENEMY;
+
+                foreach (Transform child in battleHero.txtSkillsList.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+
+                battleHero.txtSkillsList.gameObject.SetActive(false);
+            }
+            else
+            {
+                battleCharacter.request.firstTime = false;
+            }
+
+        }
     }
 
     private TEAM getBattleCharacterTeam(Character battleCharacter)

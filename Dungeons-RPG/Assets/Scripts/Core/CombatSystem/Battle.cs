@@ -249,7 +249,8 @@ public class Battle
         {
             foreach (var character in battleCharacters)
             {
-                if(character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMING)
+                if(character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMING || 
+                   character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMED)
                 {
                     isPerforming = true;
                     break;
@@ -326,6 +327,7 @@ public class Battle
             {
                 battleCharacter.selectedAction.target.life = 0;
                 battleCharacter.selectedAction.target.setState(Character.CHARACTER_BATTLE_STATE.DEAD);
+                battleCharacter.selectedAction.target.performDeadAnimation();
                 txtLog.text += "\n" + battleCharacter.selectedAction.target.txtName.text + " ha muerto";
             }
 

@@ -71,6 +71,9 @@
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleController.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleRequest.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\Dice.cs" />
+    <Compile Include="Assets\Scripts\Core\Dialogs\DialogManager.cs" />
+    <Compile Include="Assets\Scripts\Core\Dialogs\DialogMessage.cs" />
+    <Compile Include="Assets\Scripts\Core\Dialogs\TesterDialog.cs" />
     <Compile Include="Assets\Scripts\Core\Hero.cs" />
     <Compile Include="Assets\Scripts\Core\Item.cs" />
     <Compile Include="Assets\Scripts\Core\Monster.cs" />

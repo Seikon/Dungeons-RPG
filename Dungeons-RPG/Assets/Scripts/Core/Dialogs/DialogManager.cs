@@ -35,23 +35,31 @@ namespace Assets.Scripts.Core.Dialogs
 
             if (state == DIALOG_MANAGER_STATE.READING)
             {
-                //Muestra la letra en función de la velocidad
-                //Cuando se contabilice un tiempo igual a la velocidad de caracter por letra,
-                // se muestra la letra
-                if (this.time <= this.speed)
+                if (letterIndex == this.currentMessage.message.Length)
                 {
-                    this.time += Time.deltaTime;
-                }
-                else
-                {
-                    this.time = 0;
-
-                    if (letterIndex == this.currentMessage.message.Length)
+                    //Generaremos un retardo entre mensaje y mensaje para que sea legible
+                    if (this.time <= this.speed * this.currentMessage.message.Length)
                     {
-                        this.nextMessage();
+                        this.time += Time.deltaTime;
                     }
                     else
                     {
+                        this.time = 0;
+                        this.nextMessage();
+                    }
+                }
+                else
+                {
+                    //Muestra la letra en función de la velocidad
+                    //Cuando se contabilice un tiempo igual a la velocidad de caracter por letra,
+                    // se muestra la letra
+                    if (this.time <= this.speed)
+                    {
+                        this.time += Time.deltaTime;
+                    }
+                    else
+                    {
+                        this.time = 0;
                         this.readCurrentMessage();
                     }
                 }
@@ -70,6 +78,7 @@ namespace Assets.Scripts.Core.Dialogs
         private void nextMessage()
         {
             this.buffer = "";
+            this.txtPlacer.text = this.buffer;
             this.letterIndex = 0;
 
             if(this.messages.Count > 0)

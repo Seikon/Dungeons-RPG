@@ -12,12 +12,20 @@ public class TesterDialog : MonoBehaviour {
         dialog.transform.SetParent(this.gameObject.transform);
 
         GameObject brutus = GameObject.Find("BrutusElPutus");
+        GameObject skeleton = GameObject.Find("Skeleton");
 
         DialogManager dialogManager = (DialogManager) dialog.GetComponent<DialogManager>();
 
         dialogManager.addMessage(new DialogMessage("Hola soy brutus", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
-        dialogManager.addMessage(new DialogMessage("Tengo 2 añitos, crezco muy despacito ", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
-        dialogManager.addMessage(new DialogMessage("soy brutus", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
+        dialogManager.addMessage(new DialogMessage("No te voy a poner el Lorem Impsum, pero por favor no leas mis chorradas.", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
+        dialogManager.addMessage(new DialogMessage("Centrate en el funcionamiento del diálogo... vale?.", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
+        dialogManager.addMessage(new DialogMessage("Mierda no tengo el símbolo de cerrar exclamación en este Tastateur alemán.", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
+
+        dialogManager.addMessage(new DialogMessage("Haber si me dibujan ya, estos sprites los han sacado de la super nes", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, skeleton));
+
+        dialogManager.addMessage(new DialogMessage("No te quejes que yo en el juego ni existo...", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, brutus));
+
+        dialogManager.addMessage(new DialogMessage("Vaya...", DialogMessage.MODE_NEXT_MESSAGE.AUTOMATIC, skeleton));
 
         dialogManager.startReading();
     }

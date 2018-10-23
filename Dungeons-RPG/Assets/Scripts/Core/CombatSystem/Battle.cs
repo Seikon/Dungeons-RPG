@@ -250,7 +250,8 @@ public class Battle
             foreach (var character in battleCharacters)
             {
                 if(character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMING || 
-                   character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMED)
+                   character.getState() == Character.CHARACTER_BATTLE_STATE.PERFORMED  ||
+                   character.getState() == Character.CHARACTER_BATTLE_STATE.START_PERFORM)
                 {
                     isPerforming = true;
                     break;

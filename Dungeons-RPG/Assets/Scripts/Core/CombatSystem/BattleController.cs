@@ -48,7 +48,7 @@ public class BattleController : MonoBehaviour
         BrutusElPutus.battleGUID = Guid.NewGuid().ToString();
         Skeleton.battleGUID = Guid.NewGuid().ToString();
         Skeleton1.battleGUID = Guid.NewGuid().ToString();
-        //Skeleton2.battleGUID = Guid.NewGuid().ToString();
+        Skeleton2.battleGUID = Guid.NewGuid().ToString();
 
         this.acctionTurnQueue = new Queue<Character>();
 
@@ -86,8 +86,6 @@ public class BattleController : MonoBehaviour
         //Comprueba si la batalla ha finalizado
         if(!this.battle.checkBattleEnded())
         {
-            //Comprueba una vez si hay algún personaje realizando alguna acción
-            bool isPerforming = this.battle.checkCharacterPerforming();
             //Para cada personaje de batalla y según su estado, ejecuta las operaciones pertinentes
             foreach (Character battleCharacter in this.battle.battleCharacters)
             {
@@ -127,17 +125,6 @@ public class BattleController : MonoBehaviour
                         this.acctionTurnQueue.Enqueue(battleCharacter);
                         battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.QUEUED);
                         break;
-
-                    case Character.CHARACTER_BATTLE_STATE.QUEUED:
-                        //Ejecuta la acción siempre que no haya otro personaje realizando la acción
-                        if (!isPerforming)
-                        {
-                            isPerforming = true;
-                            //Ahora habrá un personaje ejecutando una acción
-                            battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.START_PERFORM);
-                        }
-                        break;
-
                     case Character.CHARACTER_BATTLE_STATE.PERFORMED:
                         battle.executeAction(battleCharacter);
                         battleCharacter.progressBarTurn = Character.PROGRESS_TURN_BAR_MIN_VALUE;
@@ -146,12 +133,36 @@ public class BattleController : MonoBehaviour
                         battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.CHARGING);
                         break;
                 }
+                //Ejecuta las acciones pendientes en la cola de turnos
+                this.proccesTurnActionQueue();
             }
         }
         else
         {
             this.enabled = false;
             this.battle.txtLog.text += "\n" + "La batalla ha finalizado";
+        }
+    }
+
+    private void proccesTurnActionQueue()
+    {
+        bool isPerforming = this.battle.checkCharacterPerforming();
+        Character battleCharacter;
+        //Ejecuta la acción siempre que no haya otro personaje realizando la acción
+        if (!isPerforming)
+        {
+            //Si la cola de turnos tiene acciones pendientes
+            if(this.acctionTurnQueue.Count > 0)
+            {
+                battleCharacter = this.acctionTurnQueue.Dequeue();
+                //Es posible que el personaje haya muerto mientras estaba en la cola de turnos de acción,
+                // por lo que habrá que sacarle y, por supuesto, no ejecutar su acción
+                if(battleCharacter.getState() != Character.CHARACTER_BATTLE_STATE.DEAD)
+                {
+                    //Ahora habrá un personaje ejecutando una acción
+                    battleCharacter.setState(Character.CHARACTER_BATTLE_STATE.START_PERFORM);
+                }
+            }
         }
     }
 

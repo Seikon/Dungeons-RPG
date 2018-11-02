@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Core.Skills;
+using Assets.Scripts.Core.CombatSystem.IA;
 
 public class Skeleton : Monster
 {
@@ -13,6 +15,8 @@ public class Skeleton : Monster
     protected override void Start()
     {
         base.Start();
+        this.IA = new Opportunist();
+        this.magics.Add(new Tombstone());
     }
 
     

@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Resources/Scenes/dialogDemo.unity
+- path: Assets/Resources/Scenes/basicCombat.unity
   isLoaded: 1
   isActive: 1

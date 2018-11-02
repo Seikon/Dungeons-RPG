@@ -272,11 +272,18 @@ public abstract class Character : MonoBehaviour
                     {
                         
                         //Crea el game object en función del nombre al que referencia
-                        animationSkil = (GameObject)Instantiate(Resources.Load("Prefabs/Skills/" + this.selectedAction.skillTarget.name));
-                        animationSkil.transform.SetParent(this.transform);
-                        animationSkil.transform.SetPositionAndRotation(this.selectedAction.target.transform.position, this.selectedAction.target.transform.rotation);
-                        //Notifica que ha creado la animación
-                        this.animationCreated = true;
+                        try
+                        {
+                            animationSkil = (GameObject)Instantiate(Resources.Load("Prefabs/Skills/" + this.selectedAction.skillTarget.name));
+                            animationSkil.transform.SetParent(this.transform);
+                            animationSkil.transform.SetPositionAndRotation(this.selectedAction.target.transform.position, this.selectedAction.target.transform.rotation);
+                            //Notifica que ha creado la animación
+                            this.animationCreated = true;
+                        }
+                        catch(System.ArgumentException)
+                        {
+                            throw new System.ArgumentException(this.selectedAction.skillTarget.name + " no existe como game object mágico");
+                        }
                     }
                     else
                     {

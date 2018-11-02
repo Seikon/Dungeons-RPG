@@ -3,16 +3,24 @@ using UnityEditor;
 
 public abstract class Skill
 {
+
+    public enum SCOPE
+    {
+        ONE_CHARACTER = 0,
+        ALL = 1
+    }
+
     public string name;
     public string niceName;
     public ELEMENT_TYPE type;
+    public SCOPE targetType;
     public int damage;
     public int precision;
 
     public int criticalAttackProbability;
     public float criticalAttackModifier;
 
-    public Skill(string name, string niceName, ELEMENT_TYPE type, int damage, int precision)
+    public Skill(string name, string niceName, ELEMENT_TYPE type, SCOPE targetType, int damage, int precision)
     {
         this.name = name;
         this.niceName = niceName;
@@ -25,6 +33,7 @@ public abstract class Skill
     {
         FIRE = 0,
         WATER = 1,
-        ELECTRICITY= 2
+        ELECTRICITY = 2,
+        EARTH = 3
     }
 }

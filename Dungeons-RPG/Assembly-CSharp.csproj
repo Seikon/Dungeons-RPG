@@ -71,6 +71,9 @@
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleController.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\BattleRequest.cs" />
     <Compile Include="Assets\Scripts\Core\CombatSystem\Dice.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\IA\IBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\IA\Opportunist.cs" />
+    <Compile Include="Assets\Scripts\Core\CombatSystem\IA\Personality.cs" />
     <Compile Include="Assets\Scripts\Core\Dialogs\DialogManager.cs" />
     <Compile Include="Assets\Scripts\Core\Dialogs\DialogMessage.cs" />
     <Compile Include="Assets\Scripts\Core\Dialogs\TesterDialog.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Assets\Scripts\Core\Skeleton.cs" />
     <Compile Include="Assets\Scripts\Core\Skills\FireBall.cs" />
     <Compile Include="Assets\Scripts\Core\Skills\Skill.cs" />
+    <Compile Include="Assets\Scripts\Core\Skills\Tombstone.cs" />
     <Compile Include="Assets\Scripts\Core\Utils.cs" />
     <Compile Include="Assets\Scripts\Core\Weapon.cs" />
     <Compile Include="Assets\Scripts\StateGame\GameState.cs" />

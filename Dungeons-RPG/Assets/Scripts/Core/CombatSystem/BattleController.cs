@@ -514,7 +514,7 @@ public class BattleController : MonoBehaviour
                 itemTempComp.font = battleHero.txtName.font;
                 itemTempComp.alignment = TextAnchor.MiddleCenter;
                 itemTempComp.fontSize = battleHero.txtName.fontSize;
-                itemTempComp.color = battleHero.txtMagicAttack.color;
+                itemTempComp.color = Color.white;
                 itemText.transform.SetParent(battleHero.txtSkillsList.transform);
                 //Posición relativa a su padre
                 itemText.GetComponent<RectTransform>().localPosition = new Vector2(-15, (indItem + 1) * -15);

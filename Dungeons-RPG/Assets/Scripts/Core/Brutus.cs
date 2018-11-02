@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-
+using Assets.Scripts.Core.Skills;
 public class Brutus : Hero
 {
 
